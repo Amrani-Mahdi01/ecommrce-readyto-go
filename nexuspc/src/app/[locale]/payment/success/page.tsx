@@ -37,25 +37,36 @@ export default async function PaymentSuccessPage({ params, searchParams }: PageP
   const invoiceOrderId = order ? await getOrderId(order) : null;
 
   return (
-    <div className={`min-h-screen bg-background flex items-center justify-center p-4 ${isRTL ? 'font-cairo' : ''}`}>
-      <div className="w-full max-w-md text-center space-y-6">
+    <div className={`min-h-screen bg-zinc-950 flex items-center justify-center p-4 relative overflow-hidden ${isRTL ? 'font-cairo' : ''}`}>
+      {/* Background diagonal grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(45deg, rgba(139,92,246,0.04) 0px, rgba(139,92,246,0.04) 1px, transparent 1px, transparent 60px)',
+        }}
+      />
+
+      {/* Emerald orb */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-emerald-500/8 blur-[100px] pointer-events-none" />
+
+      <div className="relative w-full max-w-md text-center space-y-6">
         <div className="flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/40">
-            <CheckCircle2 className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+          <div className="w-20 h-20 border-2 border-emerald-500 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="h-10 w-10 text-emerald-500" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-extrabold">
+          <h1 className="font-display font-black text-4xl uppercase text-white">
             {isRTL ? 'تم الدفع بنجاح!' : 'Payment Successful!'}
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-zinc-400 text-sm">
             {isRTL
               ? 'تم استلام دفعتك وسيتم تجهيز طلبك قريباً.'
               : 'Your payment has been received and your order will be processed shortly.'}
           </p>
           {order && (
-            <p className="text-xs text-muted-foreground font-mono mt-1">
+            <p className="text-xs text-zinc-600 font-mono mt-1">
               {isRTL ? 'رقم الطلب:' : 'Order ref:'} {order}
             </p>
           )}
@@ -76,13 +87,13 @@ export default async function PaymentSuccessPage({ params, searchParams }: PageP
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href={`/${locale}`}
-            className={cn(buttonVariants({ variant: 'outline' }))}
+            className={cn(buttonVariants({ variant: 'outline' }), 'rounded-none')}
           >
             {isRTL ? 'العودة للرئيسية' : 'Back to Home'}
           </Link>
           <Link
             href={`/${locale}/store`}
-            className={cn(buttonVariants({ variant: 'outline' }))}
+            className={cn(buttonVariants({ variant: 'outline' }), 'rounded-none')}
           >
             {isRTL ? 'تسوق المزيد' : 'Continue Shopping'}
           </Link>

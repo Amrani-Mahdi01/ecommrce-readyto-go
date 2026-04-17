@@ -83,15 +83,15 @@ export function TrackOrderClient({ locale }: { locale: string }) {
       <div className="container mx-auto px-4 max-w-2xl">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
+          <div className="w-16 h-16 border border-primary/30 bg-primary/5 flex items-center justify-center mx-auto mb-6">
             <Package className="h-7 w-7" />
           </div>
-          <h1 className="text-2xl font-extrabold mb-2">{t('trackTitle')}</h1>
-          <p className="text-sm text-muted-foreground">{t('trackSubtitle')}</p>
+          <h1 className="font-display font-black text-3xl uppercase mb-2">{t('trackTitle')}</h1>
+          <p className="text-muted-foreground text-sm">{t('trackSubtitle')}</p>
         </div>
 
         {/* Search form */}
-        <form onSubmit={handleSearch} className="rounded-xl border border-border/60 bg-card p-6 space-y-4">
+        <form onSubmit={handleSearch} className="border border-border bg-card p-6 space-y-4">
           <div className="space-y-1.5">
             <label className={`text-sm font-medium block ${isRTL ? 'text-right' : ''}`}>{t('orderId')}</label>
             <input
@@ -99,7 +99,7 @@ export function TrackOrderClient({ locale }: { locale: string }) {
               value={orderId}
               onChange={(e) => setOrderId(e.target.value)}
               placeholder={t('orderIdPlaceholder')}
-              className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50"
+              className="w-full h-10 px-3 rounded-none border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50"
             />
           </div>
           <div className="space-y-1.5">
@@ -109,12 +109,12 @@ export function TrackOrderClient({ locale }: { locale: string }) {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="05xxxxxxxx"
-              className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50"
+              className="w-full h-10 px-3 rounded-none border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50"
               dir="ltr"
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" className="w-full gap-2" disabled={loading}>
+          <Button type="submit" className="w-full gap-2 rounded-none" disabled={loading}>
             {loading ? (
               <span className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
             ) : (
@@ -128,21 +128,21 @@ export function TrackOrderClient({ locale }: { locale: string }) {
         {order && (
           <div className="mt-6 space-y-4 animate-fade-in-up">
             {/* Status card */}
-            <div className="rounded-xl border border-border/60 bg-card p-6">
+            <div className="border border-border bg-card p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className={isRTL ? 'text-right' : ''}>
                   <p className="text-xs text-muted-foreground">{t('orderId')}</p>
-                  <p className="font-bold text-lg font-mono">{order.order_number}</p>
+                  <p className="font-display font-black text-xl font-mono">{order.order_number}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {new Date(order.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'en-DZ')}
                   </p>
                 </div>
                 <Badge
-                  className={`capitalize text-xs px-3 py-1.5 rounded-full font-semibold ${
-                    order.status === 'delivered' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' :
-                    order.status === 'cancelled' ? 'bg-destructive/10 text-destructive' :
-                    order.status === 'shipped'   ? 'bg-primary/10 text-primary' :
-                    'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400'
+                  className={`capitalize text-xs px-3 py-1.5 font-bold uppercase tracking-wider ${
+                    order.status === 'delivered' ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800' :
+                    order.status === 'cancelled' ? 'bg-destructive/10 text-destructive border border-destructive/30' :
+                    order.status === 'shipped'   ? 'bg-primary/10 text-primary border border-primary/30' :
+                    'bg-amber-950/40 text-amber-400 border border-amber-800'
                   }`}
                 >
                   {t(order.status as any)}
@@ -164,7 +164,7 @@ export function TrackOrderClient({ locale }: { locale: string }) {
                     const done = currentStep >= stepNum;
                     return (
                       <div key={step} className="relative z-10 flex flex-col items-center gap-2 flex-1">
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                        <div className={`w-8 h-8 border-2 flex items-center justify-center transition-all duration-300 ${
                           done
                             ? 'bg-primary border-primary text-primary-foreground'
                             : 'bg-card border-border/60 text-muted-foreground/40'
@@ -189,41 +189,41 @@ export function TrackOrderClient({ locale }: { locale: string }) {
             </div>
 
             {/* Delivery info */}
-            <div className="rounded-xl border border-border/60 bg-card p-5">
-              <h3 className={`font-semibold text-sm mb-4 ${isRTL ? 'text-right' : ''}`}>{t('deliveryInfo')}</h3>
+            <div className="border border-border bg-card p-5">
+              <h3 className={`font-semibold text-sm uppercase tracking-wider mb-4 ${isRTL ? 'text-right' : ''}`}>{t('deliveryInfo')}</h3>
               <div className={`grid grid-cols-2 gap-4 text-sm ${isRTL ? 'text-right' : ''}`}>
                 <div>
-                  <p className="text-muted-foreground text-xs mb-0.5">{locale === 'ar' ? 'الاسم الكامل' : 'Full Name'}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{locale === 'ar' ? 'الاسم الكامل' : 'Full Name'}</p>
                   <p className="font-medium">{order.full_name}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs mb-0.5">{t('phone')}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{t('phone')}</p>
                   <p className="font-medium flex items-center gap-1">
                     <Phone className="h-3.5 w-3.5" />
                     {order.phone}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs mb-0.5">{locale === 'ar' ? 'الولاية' : 'Wilaya'}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{locale === 'ar' ? 'الولاية' : 'Wilaya'}</p>
                   <p className="font-medium">{order.wilaya}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-xs mb-0.5">{locale === 'ar' ? 'البلدية' : 'Commune'}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{locale === 'ar' ? 'البلدية' : 'Commune'}</p>
                   <p className="font-medium">{order.commune}</p>
                 </div>
               </div>
               {order.notes && (
                 <div className={`mt-3 pt-3 border-t border-border/40 ${isRTL ? 'text-right' : ''}`}>
-                  <p className="text-muted-foreground text-xs mb-1">{locale === 'ar' ? 'ملاحظات التوصيل' : 'Delivery Notes'}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{locale === 'ar' ? 'ملاحظات التوصيل' : 'Delivery Notes'}</p>
                   <p className="text-sm">{order.notes}</p>
                 </div>
               )}
             </div>
 
             {/* Total + download */}
-            <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
+            <div className="border border-border bg-card p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-semibold">{t('orderTotal')}</span>
+                <span className="font-semibold uppercase tracking-wider text-sm">{t('orderTotal')}</span>
                 <span className="text-xl font-extrabold text-primary">{formatPrice(order.total)}</span>
               </div>
               {/* Show download only for confirmed/paid orders */}

@@ -57,7 +57,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
   return (
     <div className={`min-h-screen bg-background ${isRTL ? 'font-cairo' : ''}`}>
       {/* Breadcrumbs */}
-      <div className="border-b border-border/60 bg-card/40">
+      <div className="border-b border-border/40 bg-card/30">
         <div className="container mx-auto px-4 py-2.5 flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
           <Link href={`/${locale}`} className="hover:text-foreground transition-colors">{tn('home')}</Link>
           {isRTL ? <ChevronLeft className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
@@ -67,13 +67,13 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
 
           {/* ── Image gallery ── */}
           <div className="flex flex-col gap-3">
             {/* Main image */}
-            <div className="relative aspect-square rounded-2xl border border-border/60 bg-muted/20 overflow-hidden">
+            <div className="relative aspect-square border border-border bg-muted/20 overflow-hidden">
               {product.images[selectedImage] ? (
                 <Image
                   src={product.images[selectedImage]}
@@ -88,9 +88,9 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
                 </div>
               )}
               {hasDiscount && (
-                <Badge className={`absolute top-4 bg-primary text-primary-foreground font-bold text-sm px-2 py-1 ${isRTL ? 'right-4' : 'left-4'}`}>
+                <span className={`absolute top-4 bg-primary text-primary-foreground font-bold text-sm px-2 py-1 rounded-none ${isRTL ? 'right-4' : 'left-4'}`}>
                   -{discountPct}%
-                </Badge>
+                </span>
               )}
             </div>
 
@@ -101,7 +101,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-muted/20 transition-colors ${
+                    className={`shrink-0 w-16 h-16 border-2 overflow-hidden bg-muted/20 transition-colors ${
                       selectedImage === i ? 'border-primary' : 'border-border/60 hover:border-primary/50'
                     }`}
                   >
@@ -127,7 +127,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
             </div>
 
             {/* Name */}
-            <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight" dir={isRTL ? 'rtl' : 'ltr'}>
+            <h1 className="font-display font-black text-2xl sm:text-3xl uppercase leading-tight" dir={isRTL ? 'rtl' : 'ltr'}>
               {name}
             </h1>
 
@@ -152,9 +152,9 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
                 </span>
               )}
               {hasDiscount && (
-                <Badge variant="secondary" className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40">
+                <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/40 rounded-none px-2 py-0.5 text-sm font-bold">
                   {locale === 'ar' ? `وفّر ${discountPct}%` : `Save ${discountPct}%`}
-                </Badge>
+                </span>
               )}
             </div>
 
@@ -178,7 +178,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
             {/* Qty + Add to cart */}
             <div className="flex items-center gap-3 border-t border-border/60 pt-4">
               {/* Quantity */}
-              <div className={`flex items-center border border-border/60 rounded-lg overflow-hidden ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center border border-border overflow-hidden ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   disabled={!inStock}
@@ -198,7 +198,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
 
               <Button
                 size="lg"
-                className="flex-1 gap-2 transition-all"
+                className="flex-1 gap-2 transition-all rounded-none"
                 disabled={!inStock}
                 onClick={handleAddToCart}
               >
@@ -218,7 +218,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
               <Button
                 size="lg"
                 variant="secondary"
-                className="flex-1 gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+                className="flex-1 gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-none"
                 disabled={!inStock}
                 onClick={handleOrderNow}
               >
@@ -228,7 +228,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
             </div>
 
             {/* COD notice */}
-            <div className={`flex items-start gap-2 rounded-lg bg-muted/50 border border-border/60 p-3 text-xs text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
+            <div className={`flex items-start gap-2 bg-muted/30 border border-border p-3 text-xs text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
               <span className="text-lg leading-none">🚚</span>
               <span>
                 {locale === 'ar'
@@ -242,8 +242,8 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
         {/* ── Specs ── */}
         {specEntries.length > 0 && (
           <div className="mt-12">
-            <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : ''}`}>{t('specs')}</h2>
-            <div className="rounded-xl border border-border/60 overflow-hidden">
+            <h2 className={`font-display font-black text-xl uppercase mb-4 ${isRTL ? 'text-right' : ''}`}>{t('specs')}</h2>
+            <div className="border border-border overflow-hidden">
               <table className="w-full text-sm">
                 <tbody>
                   {specEntries.map(([key, value], i) => (
@@ -265,7 +265,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
         {/* ── Related products ── */}
         {related.length > 0 && (
           <div className="mt-12">
-            <h2 className={`text-xl font-bold mb-6 ${isRTL ? 'text-right' : ''}`}>{t('relatedProducts')}</h2>
+            <h2 className={`font-display font-black text-xl uppercase mb-6 ${isRTL ? 'text-right' : ''}`}>{t('relatedProducts')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} locale={locale} />

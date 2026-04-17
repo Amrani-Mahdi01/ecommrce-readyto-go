@@ -37,11 +37,11 @@ export function ProductRow({ product, locale }: ProductRowProps) {
   };
 
   return (
-    <div className="group flex gap-4 rounded-xl border border-border/60 bg-card p-3 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 transition-all duration-200">
+    <div className="group flex gap-4 border border-border bg-card p-3 hover:border-primary/40 transition-all duration-200">
       {/* Image */}
       <Link
         href={`/${locale}/store/product/${product.slug}`}
-        className="shrink-0 relative w-28 h-28 sm:w-36 sm:h-36 rounded-lg overflow-hidden bg-muted/30"
+        className="shrink-0 relative w-28 h-28 sm:w-36 sm:h-36 overflow-hidden bg-muted/30"
       >
         {image ? (
           <Image
@@ -56,7 +56,7 @@ export function ProductRow({ product, locale }: ProductRowProps) {
           </div>
         )}
         {hasDiscount && (
-          <Badge className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5">
+          <Badge className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-none">
             -{discountPct}%
           </Badge>
         )}
@@ -102,7 +102,7 @@ export function ProductRow({ product, locale }: ProductRowProps) {
         </div>
         <Button
           size="sm"
-          className="gap-1.5 whitespace-nowrap"
+          className="gap-1.5 whitespace-nowrap rounded-none"
           disabled={!inStock}
           onClick={handleAddToCart}
         >

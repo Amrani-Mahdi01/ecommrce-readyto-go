@@ -258,10 +258,17 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
 
   if (items.length === 0) {
     return (
-      <div className={`min-h-screen bg-background flex items-center justify-center ${isRTL ? 'font-cairo' : ''}`}>
-        <div className="text-center space-y-4">
-          <ShoppingBag className="h-16 w-16 text-muted-foreground/30 mx-auto" />
-          <h2 className="text-xl font-bold">{locale === 'ar' ? 'السلة فارغة' : 'Your cart is empty'}</h2>
+      <div className={`min-h-screen bg-background flex items-center justify-center py-12 ${isRTL ? 'font-cairo' : ''}`}>
+        <div className="text-center space-y-5">
+          <div className="flex justify-center">
+            <div className="h-20 w-20 flex items-center justify-center bg-muted/20 border border-border">
+              <ShoppingBag className="h-10 w-10 text-muted-foreground/40" />
+            </div>
+          </div>
+          <h2 className="font-display font-black text-2xl uppercase">{locale === 'ar' ? 'السلة فارغة' : 'Your cart is empty'}</h2>
+          <p className="text-sm text-muted-foreground">
+            {locale === 'ar' ? 'أضف بعض المنتجات للمتابعة' : 'Add some products to continue'}
+          </p>
           <Link href={`/${locale}/store`} className="text-primary hover:underline text-sm">
             {locale === 'ar' ? 'تسوق الآن' : 'Start Shopping'}
           </Link>
@@ -271,7 +278,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
   }
 
   return (
-    <div className={`min-h-screen bg-background py-8 ${isRTL ? 'font-cairo' : ''}`}>
+    <div className={`min-h-screen bg-background py-10 ${isRTL ? 'font-cairo' : ''}`}>
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6">
@@ -282,7 +289,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
           <span className="text-foreground">{t('title')}</span>
         </div>
 
-        <h1 className={`text-2xl font-extrabold mb-8 ${isRTL ? 'text-right' : ''}`}>{t('title')}</h1>
+        <h1 className={`font-display font-black text-3xl uppercase mb-8 ${isRTL ? 'text-right' : ''}`}>{t('title')}</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
@@ -290,8 +297,8 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
 
             {/* ── Delivery type selector ── */}
-            <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-              <h2 className={`font-semibold text-sm uppercase tracking-widest text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
+            <div className="border border-border bg-card p-5 space-y-4">
+              <h2 className={`text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
                 {locale === 'ar' ? 'طريقة التوصيل' : 'Delivery Method'}
               </h2>
               <div className="grid grid-cols-2 gap-3">
@@ -299,7 +306,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                 <button
                   type="button"
                   onClick={() => handleDeliveryTypeChange('home')}
-                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all text-center ${
+                  className={`flex flex-col items-center gap-2 border-2 p-4 text-center transition-all ${
                     deliveryType === 'home'
                       ? 'border-primary bg-primary/5'
                       : 'border-border/60 hover:border-border'
@@ -323,7 +330,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                   type="button"
                   onClick={() => handleDeliveryTypeChange('office')}
                   disabled={offices.length === 0}
-                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all text-center disabled:opacity-40 disabled:cursor-not-allowed ${
+                  className={`flex flex-col items-center gap-2 border-2 p-4 text-center transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                     deliveryType === 'office'
                       ? 'border-primary bg-primary/5'
                       : 'border-border/60 hover:border-border'
@@ -343,8 +350,8 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
             </div>
 
             {/* ── Contact info ── */}
-            <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-              <h2 className={`font-semibold text-sm uppercase tracking-widest text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
+            <div className="border border-border bg-card p-5 space-y-4">
+              <h2 className={`text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
                 {locale === 'ar' ? 'معلومات التواصل' : 'Contact Info'}
               </h2>
 
@@ -357,7 +364,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                   onChange={set('fullName')}
                   required
                   placeholder={locale === 'ar' ? 'الاسم الكامل' : 'Full name'}
-                  className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${fieldErrors.fullName ? 'border-destructive' : 'border-input'}`}
+                  className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${fieldErrors.fullName ? 'border-destructive' : 'border-input'}`}
                   dir={isRTL ? 'rtl' : 'ltr'}
                 />
                 {fieldErrors.fullName && <p className="text-xs text-destructive">{fieldErrors.fullName}</p>}
@@ -373,7 +380,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                   required
                   maxLength={10}
                   placeholder="05xxxxxxxx"
-                  className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${fieldErrors.phone ? 'border-destructive' : 'border-input'}`}
+                  className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${fieldErrors.phone ? 'border-destructive' : 'border-input'}`}
                   dir="ltr"
                 />
                 {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
@@ -388,7 +395,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                       value={wilayaCode}
                       onChange={handleWilayaChange}
                       required
-                      className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.wilaya ? 'border-destructive' : 'border-input'}`}
+                      className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.wilaya ? 'border-destructive' : 'border-input'}`}
                       dir={isRTL ? 'rtl' : 'ltr'}
                     >
                       <option value="">{t('selectWilaya')}</option>
@@ -404,7 +411,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                   <div className="space-y-1.5">
                     <label className={`text-sm font-medium block ${isRTL ? 'text-right' : ''}`}>{t('commune')}</label>
                     {communesLoading ? (
-                      <div className="flex items-center gap-2 h-10 px-3 rounded-lg border border-input bg-background">
+                      <div className="flex items-center gap-2 h-10 px-3 rounded-none border border-input bg-background">
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">
                           {locale === 'ar' ? 'جارٍ التحميل...' : 'Loading...'}
@@ -415,7 +422,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                         value={form.commune}
                         onChange={set('commune')}
                         required
-                        className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.commune ? 'border-destructive' : 'border-input'}`}
+                        className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.commune ? 'border-destructive' : 'border-input'}`}
                         dir={isRTL ? 'rtl' : 'ltr'}
                       >
                         <option value="">{locale === 'ar' ? 'اختر البلدية' : 'Select commune'}</option>
@@ -430,7 +437,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                         onChange={set('commune')}
                         required
                         placeholder={locale === 'ar' ? 'البلدية / المنطقة' : 'Commune / District'}
-                        className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${fieldErrors.commune ? 'border-destructive' : 'border-input'}`}
+                        className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${fieldErrors.commune ? 'border-destructive' : 'border-input'}`}
                         dir={isRTL ? 'rtl' : 'ltr'}
                       />
                     )}
@@ -449,7 +456,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                       value={wilayaCode}
                       onChange={handleWilayaChange}
                       required
-                      className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.wilaya ? 'border-destructive' : 'border-input'}`}
+                      className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.wilaya ? 'border-destructive' : 'border-input'}`}
                       dir={isRTL ? 'rtl' : 'ltr'}
                     >
                       <option value="">{t('selectWilaya')}</option>
@@ -475,7 +482,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                           setFieldErrors((prev) => ({ ...prev, office: undefined }));
                         }}
                         required
-                        className={`w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.office ? 'border-destructive' : 'border-input'}`}
+                        className={`w-full h-10 px-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer ${fieldErrors.office ? 'border-destructive' : 'border-input'}`}
                         dir={isRTL ? 'rtl' : 'ltr'}
                       >
                         <option value="">{locale === 'ar' ? 'اختر مكتبًا' : 'Select an office'}</option>
@@ -492,7 +499,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
 
                       {/* Selected office detail */}
                       {selectedOffice && (
-                        <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 space-y-1 text-xs">
+                        <div className="rounded-none bg-primary/5 border border-primary/20 p-3 space-y-1 text-xs">
                           <p className="font-semibold text-primary">{selectedOffice.name}</p>
                           {selectedOffice.address && (
                             <p className="text-muted-foreground">{selectedOffice.address}</p>
@@ -518,7 +525,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                   onChange={set('notes')}
                   rows={2}
                   placeholder={t('notesPlaceholder')}
-                  className="w-full px-3 py-2.5 rounded-lg border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
+                  className="w-full px-3 py-2.5 rounded-none border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
                   dir={isRTL ? 'rtl' : 'ltr'}
                 />
               </div>
@@ -534,7 +541,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('cod')}
-                  className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-colors ${effectivePayment === 'cod' ? 'border-primary bg-primary/5' : 'border-border/60 hover:bg-accent/50'}`}
+                  className={`flex flex-col items-center gap-2 border p-4 text-center transition-colors ${effectivePayment === 'cod' ? 'border-primary bg-primary/5' : 'border-border/60 hover:bg-accent/50'}`}
                 >
                   <Banknote className={`h-6 w-6 ${effectivePayment === 'cod' ? 'text-primary' : 'text-muted-foreground'}`} />
                   <div>
@@ -552,7 +559,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('online')}
-                    className={`flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-colors ${effectivePayment === 'online' ? 'border-primary bg-primary/5' : 'border-border/60 hover:bg-accent/50'}`}
+                    className={`flex flex-col items-center gap-2 border p-4 text-center transition-colors ${effectivePayment === 'online' ? 'border-primary bg-primary/5' : 'border-border/60 hover:bg-accent/50'}`}
                   >
                     <CreditCard className={`h-6 w-6 ${effectivePayment === 'online' ? 'text-primary' : 'text-muted-foreground'}`} />
                     <div>
@@ -569,7 +576,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
 
               {/* Context notice */}
               {effectivePayment === 'cod' && (
-                <div className={`flex items-start gap-3 rounded-xl bg-primary/5 border border-primary/20 p-4 ${isRTL ? 'text-right' : ''}`}>
+                <div className={`flex items-start gap-3 rounded-none bg-primary/5 border border-primary/20 p-4 ${isRTL ? 'text-right' : ''}`}>
                   <Truck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-semibold text-primary">{t('codNotice')}</p>
@@ -579,7 +586,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                 </div>
               )}
               {effectivePayment === 'online' && (
-                <div className={`flex items-start gap-3 rounded-xl bg-blue-500/5 border border-blue-500/20 p-4 ${isRTL ? 'text-right' : ''}`}>
+                <div className={`flex items-start gap-3 rounded-none bg-blue-500/5 border border-blue-500/20 p-4 ${isRTL ? 'text-right' : ''}`}>
                   <CreditCard className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
@@ -597,7 +604,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 
-            <Button type="submit" size="lg" className="w-full gap-2" disabled={loading}>
+            <Button type="submit" size="lg" className="w-full gap-2 rounded-none" disabled={loading}>
               {loading && <span className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
               {t('placeOrder')}
             </Button>
@@ -605,9 +612,9 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
 
           {/* ── Order summary ── */}
           <div className="lg:col-span-2">
-            <div className="sticky top-24 rounded-xl border border-border/60 bg-card overflow-hidden">
+            <div className="sticky top-24 border border-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border/60">
-                <h2 className={`font-semibold ${isRTL ? 'text-right' : ''}`}>{t('orderSummary')}</h2>
+                <h2 className={`font-semibold uppercase tracking-wider text-sm ${isRTL ? 'text-right' : ''}`}>{t('orderSummary')}</h2>
               </div>
 
               <div className="p-4 space-y-3 max-h-60 overflow-y-auto">
@@ -630,7 +637,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
               {/* Promo code */}
               <div className="px-5 pb-3 border-t border-border/60 pt-4">
                 {appliedPromo ? (
-                  <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg px-3 py-2 text-sm">
+                  <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-none px-3 py-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Tag className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                       <span className="font-mono font-bold text-emerald-700 dark:text-emerald-300">{appliedPromo.code}</span>
@@ -650,7 +657,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                         value={promoInput}
                         onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                         placeholder={locale === 'ar' ? 'كود الخصم' : 'Promo code'}
-                        className="flex-1 h-9 px-3 rounded-lg border border-input bg-background text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-ring/50"
+                        className="flex-1 h-9 px-3 rounded-none border border-input bg-background text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-ring/50"
                         onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                       />
                       <Button
@@ -659,7 +666,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
                         size="sm"
                         onClick={handleApplyPromo}
                         disabled={promoLoading || !promoInput.trim()}
-                        className="shrink-0"
+                        className="shrink-0 rounded-none"
                       >
                         {promoLoading
                           ? <span className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />

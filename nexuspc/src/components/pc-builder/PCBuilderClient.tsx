@@ -227,17 +227,17 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
   return (
     <div className={`min-h-screen bg-background ${isRTL ? 'font-cairo' : ''}`}>
       {/* Header */}
-      <div className="border-b border-border/60 bg-card/50 py-8">
+      <div className="border-b border-border/40 bg-zinc-950 py-12">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl font-extrabold mb-2">{t('title')}</h1>
-          <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
+          <h1 className="font-display font-black text-4xl uppercase text-white mb-2">{t('title')}</h1>
+          <p className="text-zinc-400 text-sm">{t('subtitle')}</p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
 
         {/* ── AI Build Panel ── */}
-        {aiEnabled && <div className="mb-6 rounded-2xl border border-violet-400/30 bg-violet-500/5 p-5">
+        {aiEnabled && <div className="mb-6 border border-primary/25 bg-primary/[0.03] p-5">
           <div className="flex items-center justify-between gap-2 mb-1">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-violet-500" />
@@ -282,7 +282,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                 value={budget}
                 onChange={e => setBudget(e.target.value)}
                 placeholder={locale === 'ar' ? 'مثال: 150000 (الحد الأدنى 100.000)' : 'e.g. 150000 (min 100.000)'}
-                className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                className="w-full h-10 px-3 rounded-none border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
 
@@ -299,9 +299,9 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                   <button
                     key={key}
                     onClick={() => setPurpose(key)}
-                    className={`flex items-center justify-center gap-1 rounded-lg text-xs font-medium transition-colors border h-full
+                    className={`flex items-center justify-center gap-1 rounded-none text-xs font-medium transition-colors border h-full
                       ${purpose === key
-                        ? 'bg-violet-600 text-white border-violet-600'
+                        ? 'bg-primary text-white border-primary'
                         : 'border-border/60 bg-background hover:bg-accent text-muted-foreground'}`}
                   >
                     <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -316,7 +316,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
               <Button
                 onClick={handleAIBuild}
                 disabled={aiBuilding || !budget || blockedMin > 0 || usesLeft === 0}
-                className="gap-2 bg-violet-600 hover:bg-violet-700 text-white h-10 px-5 whitespace-nowrap disabled:opacity-50"
+                className="rounded-none gap-2 bg-primary hover:bg-primary/90 text-white h-10 px-5 whitespace-nowrap disabled:opacity-50"
               >
                 {aiBuilding
                   ? <><Loader2 className="h-4 w-4 animate-spin" />{locale === 'ar' ? 'جاري البناء...' : 'Building...'}</>
@@ -329,7 +329,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
 
           {/* AI Summary */}
           {aiSummary && (
-            <div className="mt-4 flex items-start gap-2 rounded-lg bg-violet-500/10 border border-violet-400/20 px-4 py-3">
+            <div className="mt-4 flex items-start gap-2 bg-primary/[0.08] border border-primary/20 px-4 py-3">
               <CircleCheck className="h-4 w-4 text-violet-500 shrink-0 mt-0.5" />
               <p className="text-xs text-violet-700 dark:text-violet-300">{aiSummary}</p>
             </div>
@@ -346,16 +346,16 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
               const isOpen = activeSlot === slot;
 
               return (
-                <div key={slot} className="rounded-xl border border-border/60 bg-card overflow-hidden">
+                <div key={slot} className="border border-border bg-card overflow-hidden">
                   {/* Slot row */}
                   <div
-                    className="flex items-center gap-3 p-4 cursor-pointer hover:bg-accent/30 transition-colors"
+                    className="flex items-center gap-3 p-4 cursor-pointer hover:bg-accent/20 transition-colors"
                     onClick={() => {
                       setActiveSlot(isOpen ? null : slot);
                       setSearch('');
                     }}
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-primary/10 text-primary">
                       <Icon className="h-5 w-5" />
                     </div>
 
@@ -377,14 +377,14 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                         <span className="font-semibold text-sm">{formatPrice(product.price)}</span>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleRemove(slot); }}
-                          className="p-1 rounded-md hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          className="p-1 hover:bg-destructive/10 hover:text-destructive transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 shrink-0">
-                        <Button size="sm" variant="outline" className="gap-1 h-8 text-xs">
+                        <Button size="sm" variant="outline" className="rounded-none gap-1 h-8 text-xs">
                           <Plus className="h-3.5 w-3.5" />
                           {locale === 'ar' ? 'اختر' : 'Choose'}
                         </Button>
@@ -417,7 +417,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder={t('searchComponent', { slot: t(`slots.${slot}`) })}
                             dir={isRTL ? 'rtl' : 'ltr'}
-                            className={`w-full h-8 text-xs rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring/50 ${isRTL ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
+                            className={`w-full h-8 text-xs rounded-none border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring/50 ${isRTL ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
                           />
                         </div>
                       </div>
@@ -440,7 +440,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                                 className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-accent/50 transition-colors border-b border-border/30 last:border-0 ${isSelected ? 'bg-primary/10' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                               >
                                 {/* Thumbnail */}
-                                <div className="shrink-0 w-10 h-10 rounded-lg border border-border/60 bg-muted/30 overflow-hidden">
+                                <div className="shrink-0 w-10 h-10 border border-border/60 bg-muted/30 overflow-hidden">
                                   {p.images[0] ? (
                                     <Image src={p.images[0]} alt={name} width={40} height={40} className="w-full h-full object-contain p-1" />
                                   ) : (
@@ -456,7 +456,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                                 </div>
 
                                 <span className="shrink-0 text-sm font-bold">{formatPrice(p.price)}</span>
-                                {isSelected && <Badge className="shrink-0 text-[10px]">{locale === 'ar' ? 'مختار' : 'Selected'}</Badge>}
+                                {isSelected && <Badge className="shrink-0 rounded-none text-[10px]">{locale === 'ar' ? 'مختار' : 'Selected'}</Badge>}
                               </button>
                             );
                           })
@@ -471,9 +471,9 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
 
           {/* ── Build summary ── */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-xl border border-border/60 bg-card overflow-hidden">
+            <div className="sticky top-20 border border-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border/60">
-                <h2 className={`font-bold text-lg mb-1 ${isRTL ? 'text-right' : ''}`}>
+                <h2 className={`font-display font-bold text-lg uppercase mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {locale === 'ar' ? 'ملخص البناء' : 'Build Summary'}
                 </h2>
                 <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
@@ -481,9 +481,9 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                 </p>
 
                 {/* Progress bar */}
-                <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
+                <div className="mt-3 h-1 bg-muted overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    className="h-full bg-primary transition-all duration-500"
                     style={{ width: `${(filledSlots / SLOTS.length) * 100}%` }}
                   />
                 </div>
@@ -521,7 +521,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
                   <span className="text-xl font-extrabold text-primary">{formatPrice(totalPrice)}</span>
                 </div>
                 <Button
-                  className="w-full gap-2"
+                  className="w-full gap-2 rounded-none"
                   disabled={filledSlots === 0}
                   onClick={handleAddAll}
                 >

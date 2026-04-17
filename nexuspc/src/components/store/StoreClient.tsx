@@ -103,7 +103,7 @@ export function StoreClient({
   return (
     <div className={`min-h-screen bg-background ${isRTL ? 'font-cairo' : ''}`}>
       {/* ── Top bar ── */}
-      <div className="border-b border-border/60 bg-card/50 sticky top-[60px] z-30 backdrop-blur-sm">
+      <div className="border-b border-border/60 bg-background/98 backdrop-blur-sm sticky top-[56px] z-30">
         <div className="container mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
           {/* Search */}
           <form
@@ -119,7 +119,7 @@ export function StoreClient({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t('searchPlaceholder')}
-              className={`w-full h-9 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${isRTL ? 'pr-9 pl-4' : 'pl-9 pr-4'}`}
+              className={`w-full h-9 rounded-none border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 ${isRTL ? 'pr-9 pl-4' : 'pl-9 pr-4'}`}
               dir={isRTL ? 'rtl' : 'ltr'}
             />
           </form>
@@ -128,7 +128,7 @@ export function StoreClient({
           <select
             value={filters.sort ?? ''}
             onChange={(e) => navigate({ sort: e.target.value || undefined })}
-            className="h-9 rounded-lg border border-input bg-background text-sm px-3 focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer"
+            className="h-9 rounded-none border border-input bg-background text-sm px-3 focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer"
           >
             {sortOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -139,7 +139,7 @@ export function StoreClient({
           <Button
             variant="outline"
             size="sm"
-            className="gap-1.5 h-9"
+            className="gap-1.5 h-9 rounded-none"
             onClick={() => setSidebarOpen((p) => !p)}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -152,7 +152,7 @@ export function StoreClient({
           </Button>
 
           {/* View mode */}
-          <div className="flex items-center border border-border/60 rounded-lg overflow-hidden">
+          <div className="flex items-center border border-border overflow-hidden">
             <button
               onClick={() => setViewMode('grid')}
               className={cn('p-2 transition-colors', viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent')}
@@ -217,15 +217,16 @@ export function StoreClient({
           <div className="w-64 space-y-6">
             {/* Categories */}
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3 flex items-center gap-2">
+                <span className="text-primary">◆</span>
                 {t('categoriesTitle')}
               </h3>
               <div className="space-y-1">
                 <button
                   onClick={() => navigate({ category: undefined })}
                   className={cn(
-                    `w-full text-sm px-3 py-1.5 rounded-lg transition-colors ${isRTL ? 'text-right' : 'text-left'}`,
-                    !filters.category ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                    `w-full text-sm px-3 py-1.5 transition-colors ${isRTL ? 'text-right' : 'text-left'}`,
+                    !filters.category ? 'bg-primary text-primary-foreground rounded-none' : 'hover:bg-accent rounded-none',
                   )}
                 >
                   {t('allCategories')}
@@ -235,8 +236,8 @@ export function StoreClient({
                     key={cat.slug}
                     onClick={() => navigate({ category: cat.slug })}
                     className={cn(
-                      `w-full text-sm px-3 py-1.5 rounded-lg transition-colors ${isRTL ? 'text-right' : 'text-left'}`,
-                      filters.category === cat.slug ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                      `w-full text-sm px-3 py-1.5 transition-colors ${isRTL ? 'text-right' : 'text-left'}`,
+                      filters.category === cat.slug ? 'bg-primary text-primary-foreground rounded-none' : 'hover:bg-accent rounded-none',
                     )}
                   >
                     {locale === 'ar' ? cat.name_ar : cat.name_en}
@@ -248,7 +249,8 @@ export function StoreClient({
             {/* Brands */}
             {brands.length > 0 && (
               <div>
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3 flex items-center gap-2">
+                  <span className="text-primary">◆</span>
                   {t('brandsTitle')}
                 </h3>
                 <div className="space-y-1">
@@ -257,8 +259,8 @@ export function StoreClient({
                       key={brand}
                       onClick={() => navigate({ brand: filters.brand === brand ? undefined : brand })}
                       className={cn(
-                        'w-full text-left text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center justify-between',
-                        filters.brand === brand ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                        'w-full text-left text-sm px-3 py-1.5 transition-colors flex items-center justify-between',
+                        filters.brand === brand ? 'bg-primary text-primary-foreground rounded-none' : 'hover:bg-accent rounded-none',
                       )}
                     >
                       {brand}
@@ -271,7 +273,8 @@ export function StoreClient({
 
             {/* Price range */}
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-3 flex items-center gap-2">
+                <span className="text-primary">◆</span>
                 {t('priceRange')}
               </h3>
               <div className="space-y-2">
@@ -287,8 +290,8 @@ export function StoreClient({
                       key={range.label}
                       onClick={() => navigate({ minPrice: range.min, maxPrice: range.max })}
                       className={cn(
-                        `w-full text-sm px-3 py-1.5 rounded-lg transition-colors ${isRTL ? 'text-right' : 'text-left'}`,
-                        active ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                        `w-full text-sm px-3 py-1.5 transition-colors ${isRTL ? 'text-right' : 'text-left'}`,
+                        active ? 'bg-primary text-primary-foreground rounded-none' : 'hover:bg-accent rounded-none',
                       )}
                     >
                       {range.label}
@@ -323,10 +326,12 @@ export function StoreClient({
 
           {initialProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-              <PackageX className="h-16 w-16 text-muted-foreground/30" />
+              <div className="flex items-center justify-center">
+                <PackageX className="h-16 w-16 text-muted-foreground/30" />
+              </div>
               <p className="text-lg font-semibold">{t('noProducts')}</p>
               <p className="text-sm text-muted-foreground">{t('noProductsDesc')}</p>
-              <Button variant="outline" onClick={clearAll}>{tc('clearAll')}</Button>
+              <Button variant="outline" className="rounded-none" onClick={clearAll}>{tc('clearAll')}</Button>
             </div>
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
@@ -348,6 +353,7 @@ export function StoreClient({
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-none"
                 disabled={filters.page <= 1}
                 onClick={() => navigate({ page: filters.page - 1 })}
               >
@@ -368,7 +374,7 @@ export function StoreClient({
                       key={item}
                       variant={filters.page === item ? 'default' : 'outline'}
                       size="sm"
-                      className="w-9 h-9"
+                      className="w-9 h-9 rounded-none"
                       onClick={() => navigate({ page: item as number })}
                     >
                       {item}
@@ -378,6 +384,7 @@ export function StoreClient({
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-none"
                 disabled={filters.page >= totalPages}
                 onClick={() => navigate({ page: filters.page + 1 })}
               >
@@ -393,7 +400,7 @@ export function StoreClient({
 
 function FilterPill({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-xs px-2.5 py-1">
+    <span className="inline-flex items-center gap-1 border border-primary/30 bg-primary/5 text-primary text-xs px-2.5 py-1">
       {label}
       <button onClick={onRemove} className="hover:text-destructive transition-colors">
         <X className="h-3 w-3" />

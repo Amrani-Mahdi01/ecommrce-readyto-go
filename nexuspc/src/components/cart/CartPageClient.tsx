@@ -22,15 +22,15 @@ export function CartPageClient({ locale }: { locale: string }) {
       <div className={`min-h-screen bg-background flex items-center justify-center py-12 ${isRTL ? 'font-cairo' : ''}`}>
         <div className="text-center space-y-5">
           <div className="flex justify-center">
-            <div className="h-20 w-20 rounded-2xl bg-muted/50 flex items-center justify-center">
+            <div className="h-20 w-20 flex items-center justify-center bg-muted/20 border border-border">
               <ShoppingBag className="h-10 w-10 text-muted-foreground/40" />
             </div>
           </div>
-          <h2 className="text-xl font-bold">{locale === 'ar' ? 'سلتك فارغة' : 'Your cart is empty'}</h2>
+          <h2 className="font-display font-black text-2xl uppercase">{locale === 'ar' ? 'سلتك فارغة' : 'Your cart is empty'}</h2>
           <p className="text-sm text-muted-foreground">
             {locale === 'ar' ? 'أضف بعض المنتجات للمتابعة' : 'Add some products to continue'}
           </p>
-          <Link href={`/${locale}/store`} className={cn(bv(), 'gap-2')}>
+          <Link href={`/${locale}/store`} className={cn(bv(), 'gap-2 rounded-none')}>
             <ShoppingBag className="h-4 w-4" />
             {locale === 'ar' ? 'تصفح المتجر' : 'Browse Store'}
           </Link>
@@ -40,9 +40,9 @@ export function CartPageClient({ locale }: { locale: string }) {
   }
 
   return (
-    <div className={`min-h-screen bg-background py-8 ${isRTL ? 'font-cairo' : ''}`}>
+    <div className={`min-h-screen bg-background py-10 ${isRTL ? 'font-cairo' : ''}`}>
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className={`text-2xl font-extrabold mb-8 ${isRTL ? 'text-right' : ''}`}>
+        <h1 className={`font-display font-black text-3xl uppercase mb-8 ${isRTL ? 'text-right' : ''}`}>
           {t('cart')} ({items.reduce((s, i) => s + i.quantity, 0)})
         </h1>
 
@@ -53,9 +53,9 @@ export function CartPageClient({ locale }: { locale: string }) {
               const name = locale === 'ar' ? product.name_ar : product.name_en;
               const image = product.images[0] ?? null;
               return (
-                <div key={product.id} className="flex gap-4 rounded-xl border border-border/60 bg-card p-4">
+                <div key={product.id} className="flex gap-4 border border-border bg-card p-4">
                   {/* Image */}
-                  <Link href={`/${locale}/store/product/${product.slug}`} className="shrink-0 w-24 h-24 rounded-lg border border-border/60 bg-muted/20 overflow-hidden">
+                  <Link href={`/${locale}/store/product/${product.slug}`} className="shrink-0 w-24 h-24 border border-border/60 bg-muted/20 overflow-hidden">
                     {image ? (
                       <Image src={image} alt={name} width={96} height={96} className="w-full h-full object-contain p-2" />
                     ) : (
@@ -83,12 +83,12 @@ export function CartPageClient({ locale }: { locale: string }) {
                   <div className="shrink-0 flex flex-col justify-between gap-3 items-end">
                     <button
                       onClick={() => removeItem(product.id)}
-                      className="p-1.5 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors text-muted-foreground"
+                      className="p-1.5 hover:bg-destructive/10 hover:text-destructive transition-colors text-muted-foreground"
                       aria-label="Remove"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
-                    <div className={`flex items-center border border-border/60 rounded-lg overflow-hidden ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center border border-border overflow-hidden ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <button
                         onClick={() => updateQuantity(product.id, quantity - 1)}
                         className="w-8 h-8 flex items-center justify-center hover:bg-accent transition-colors"
@@ -112,8 +112,8 @@ export function CartPageClient({ locale }: { locale: string }) {
 
           {/* Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-xl border border-border/60 bg-card p-5 space-y-4">
-              <h2 className={`font-semibold ${isRTL ? 'text-right' : ''}`}>{tco('orderSummary')}</h2>
+            <div className="sticky top-20 border border-border bg-card p-5 space-y-4">
+              <h2 className={`font-semibold uppercase tracking-wider text-sm ${isRTL ? 'text-right' : ''}`}>{tco('orderSummary')}</h2>
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
@@ -132,7 +132,7 @@ export function CartPageClient({ locale }: { locale: string }) {
 
               <Link
                 href={`/${locale}/checkout`}
-                className={cn(bv({ size: 'lg' }), 'w-full gap-2 justify-center')}
+                className={cn(bv({ size: 'lg' }), 'w-full gap-2 justify-center rounded-none')}
               >
                 {locale === 'ar' ? 'إتمام الشراء' : 'Proceed to Checkout'}
                 {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}

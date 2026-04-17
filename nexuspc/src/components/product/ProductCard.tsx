@@ -43,11 +43,11 @@ export function ProductCard({ product, locale }: ProductCardProps) {
   };
 
   return (
-    <div className={`group relative flex flex-col rounded-xl border border-border/60 bg-card hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 overflow-hidden ${isRTL ? 'font-cairo' : ''}`}>
+    <div className={`group relative flex flex-col border border-border bg-card hover:border-primary/50 transition-all duration-200 overflow-hidden ${isRTL ? 'font-cairo' : ''}`}>
       {/* Discount badge — flips side for RTL */}
       {hasDiscount && (
         <div className={`absolute top-2 z-10 ${isRTL ? 'right-2' : 'left-2'}`}>
-          <Badge className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+          <Badge className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-none">
             -{discountPct}%
           </Badge>
         </div>
@@ -74,7 +74,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
       <div className={`flex flex-col gap-2 p-3 flex-1 ${isRTL ? 'text-right' : ''}`}>
         {/* Brand */}
         {product.brand && (
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-primary/70">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80">
             {product.brand}
           </span>
         )}
@@ -129,7 +129,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           <Button
             size="sm"
             variant="outline"
-            className="gap-1.5 px-3"
+            className="gap-1.5 px-3 rounded-none"
             disabled={!inStock}
             onClick={handleAddToCart}
             aria-label={inStock ? tc('addToCart') : tc('outOfStock')}
@@ -138,7 +138,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           </Button>
           <Button
             size="sm"
-            className="flex-1 gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+            className="flex-1 gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-none"
             variant="secondary"
             disabled={!inStock}
             onClick={handleOrderNow}
@@ -146,8 +146,10 @@ export function ProductCard({ product, locale }: ProductCardProps) {
             <Zap className="h-3.5 w-3.5 fill-current" />
             {locale === 'ar' ? 'اطلب الآن' : 'Order Now'}
           </Button>
-
         </div>
+
+        {/* Bottom animated line */}
+        <div className="w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
       </div>
     </div>
   );
