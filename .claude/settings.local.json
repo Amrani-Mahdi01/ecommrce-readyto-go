@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s https://api.github.com/repos/anthropics/claude-code/contents/)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm install:*)",
+      "Bash(npm config:*)",
+      "Bash(npm --version)",
+      "Bash(NODE_OPTIONS=--openssl-legacy-provider npm install @supabase/supabase-js @supabase/ssr next-themes next-intl lucide-react zod react-hook-form @hookform/resolvers @aws-sdk/client-s3 recharts)",
+      "Bash(npm cache:*)",
+      "Bash(yarn --version)",
+      "Bash(yarn add:*)",
+      "Bash(pnpm add:*)",
+      "Bash(npx shadcn@latest init --defaults)",
+      "Bash(npx shadcn@latest add sonner --yes)",
+      "Bash(cat)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" http://localhost:3000)",
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" http://localhost:3000/en)",
+      "Bash(npx shadcn@latest add separator sheet badge --yes)",
+      "Bash(curl -s http://localhost:3000/en)",
+      "Bash(curl -s http://localhost:3000/ar)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" http://localhost:3000/en)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" http://localhost:3000/ar)",
+      "Bash(curl -s -o /dev/null -w \"/ → %{http_code}\\\\n\" http://localhost:3000)",
+      "Bash(curl -s -o /dev/null -w \"/en → %{http_code}\\\\n\" http://localhost:3000/en)",
+      "Bash(curl -s -o /dev/null -w \"/ar → %{http_code}\\\\n\" http://localhost:3000/ar)",
+      "Bash(curl -s -o /dev/null -w \"/en/store → %{http_code}\\\\n\" http://localhost:3000/en/store)",
+      "Bash(node:*)",
+      "Bash(npx shadcn@latest add card skeleton --yes)",
+      "Bash(taskkill:*)",
+      "Bash(cmd:*)",
+      "Bash(curl -s https://api.cloudflare.com/client/v4/accounts -H 'Authorization: Bearer cfut_fx0g1AYZNeszJAf40z3c8lh6l1iJ566tv3LSfMEjd0dbed33')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(a['id'], a['name']\\) for a in d.get\\('result',[]\\)]\")",
+      "Bash(curl:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npm uninstall:*)"
+    ]
+  }
+}
