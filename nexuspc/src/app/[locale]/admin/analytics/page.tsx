@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { AnalyticsClient } from '@/components/admin/AnalyticsClient';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{ locale: string }>;
 }
