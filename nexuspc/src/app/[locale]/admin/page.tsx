@@ -56,7 +56,7 @@ async function getStats() {
         .limit(6),
     ]);
 
-    const orders = allOrders ?? [];
+    const orders = (allOrders as any[]) ?? [];
 
     // Revenue today / yesterday
     const todayRevenue = orders

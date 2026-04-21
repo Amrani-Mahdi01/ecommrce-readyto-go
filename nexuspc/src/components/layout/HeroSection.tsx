@@ -16,19 +16,19 @@ interface HeroSectionProps {
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay },
+  transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const, delay },
 });
 
 const fadeSlide = (delay = 0) => ({
   initial: { opacity: 0, x: -28 },
   animate: { opacity: 1, x: 0 },
-  transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1], delay },
+  transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const, delay },
 });
 
 const popIn = (delay = 0) => ({
   initial: { opacity: 0, scale: 0.8, y: 16 },
   animate: { opacity: 1, scale: 1, y: 0 },
-  transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1], delay },
+  transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] as const, delay },
 });
 
 export function HeroSection({ locale, heroTitle, heroHighlight, heroSubtitle, shopNow, buildPC }: HeroSectionProps) {

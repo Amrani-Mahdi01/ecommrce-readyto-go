@@ -28,7 +28,7 @@ async function getCustomers() {
 
     // Aggregate order stats per user
     const statsMap = new Map<string, { count: number; spent: number; last: string }>();
-    for (const o of orders ?? []) {
+    for (const o of (orders as { user_id: string; total: number | null; created_at: string }[]) ?? []) {
       const existing = statsMap.get(o.user_id);
       if (!existing) {
         statsMap.set(o.user_id, { count: 1, spent: o.total ?? 0, last: o.created_at });

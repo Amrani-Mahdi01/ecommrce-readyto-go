@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
     // Helper to persist state
     const saveState = async (state: ConvState, ctx: ConvContext) => {
       await supabase.from('whatsapp_conversations').upsert(
-        { phone: fromPhone, state, context: ctx, updated_at: new Date().toISOString() },
+        { phone: fromPhone, state, context: ctx as unknown as import('@/types/database').Json, updated_at: new Date().toISOString() },
         { onConflict: 'phone' },
       );
     };

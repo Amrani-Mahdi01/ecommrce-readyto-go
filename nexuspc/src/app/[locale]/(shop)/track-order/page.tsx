@@ -41,5 +41,5 @@ export default async function TrackOrderPage({ params }: PageProps) {
 
   const reviewedProductIds = (reviews ?? []).map((r: { product_id: string }) => r.product_id);
 
-  return <TrackOrderClient locale={locale} userOrders={orders ?? []} reviewedProductIds={reviewedProductIds} />;
+  return <TrackOrderClient locale={locale} userOrders={(orders ?? []) as any[]} reviewedProductIds={reviewedProductIds} />;
 }

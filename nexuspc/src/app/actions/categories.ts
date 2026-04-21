@@ -46,6 +46,8 @@ export async function createCategory(input: {
     icon: input.icon,
     description_en: input.description_en.trim() || null,
     description_ar: input.description_ar.trim() || null,
+    image_url: null,
+    parent_id: null,
     display_order: input.display_order,
     is_active: input.is_active,
   });

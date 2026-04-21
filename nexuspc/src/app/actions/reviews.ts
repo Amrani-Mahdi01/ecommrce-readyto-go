@@ -67,7 +67,7 @@ export async function getReviewEligibility(productId: string): Promise<ReviewEli
       .eq('status', 'delivered');
 
     const hasProduct = (deliveredOrders ?? []).some((order) =>
-      (order.items ?? []).some((item: { product_id: string }) => item.product_id === productId)
+      ((order.items as any[]) ?? []).some((item: { product_id: string }) => item.product_id === productId)
     );
 
     if (!hasProduct) {
@@ -104,7 +104,7 @@ export async function submitReview(data: {
       .eq('status', 'delivered');
 
     const hasProduct = (deliveredOrders ?? []).some((order) =>
-      (order.items ?? []).some((item: { product_id: string }) => item.product_id === data.productId)
+      ((order.items as any[]) ?? []).some((item: { product_id: string }) => item.product_id === data.productId)
     );
 
     if (!hasProduct) return { error: 'not_eligible' };

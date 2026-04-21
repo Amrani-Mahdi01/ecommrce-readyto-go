@@ -69,7 +69,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   let profile = null;
   if (user) {
     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-    profile = data;
+    profile = data as any;
   }
 
   return (

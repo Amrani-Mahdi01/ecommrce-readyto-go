@@ -17,6 +17,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
+        Relationships: [];
       };
       products: {
         Row: {
@@ -48,6 +49,7 @@ export interface Database {
           'id' | 'created_at' | 'updated_at'
         >;
         Update: Partial<Database['public']['Tables']['products']['Insert']>;
+        Relationships: [];
       };
       orders: {
         Row: {
@@ -69,9 +71,15 @@ export interface Database {
         };
         Insert: Omit<
           Database['public']['Tables']['orders']['Row'],
-          'id' | 'created_at' | 'updated_at'
-        >;
+          'id' | 'created_at' | 'updated_at' | 'order_number' | 'user_id' | 'promo_code' | 'discount_amount'
+        > & {
+          order_number?: string;
+          user_id?: string | null;
+          promo_code?: string | null;
+          discount_amount?: number;
+        };
         Update: Partial<Database['public']['Tables']['orders']['Insert']>;
+        Relationships: [];
       };
       order_items: {
         Row: {
@@ -84,6 +92,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['order_items']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['order_items']['Insert']>;
+        Relationships: [];
       };
       cart_items: {
         Row: {
@@ -95,6 +104,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['cart_items']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['cart_items']['Insert']>;
+        Relationships: [];
       };
       categories: {
         Row: {
@@ -102,6 +112,7 @@ export interface Database {
           name_en: string;
           name_ar: string;
           slug: string;
+          icon: string | null;
           description_en: string | null;
           description_ar: string | null;
           image_url: string | null;
@@ -111,6 +122,7 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['categories']['Row'], 'id'>;
         Update: Partial<Database['public']['Tables']['categories']['Insert']>;
+        Relationships: [];
       };
       pc_builds: {
         Row: {
@@ -124,6 +136,19 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['pc_builds']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['pc_builds']['Insert']>;
+        Relationships: [];
+      };
+      whatsapp_conversations: {
+        Row: {
+          id: string;
+          phone: string;
+          state: string;
+          context: Json;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['whatsapp_conversations']['Row'], 'id'>;
+        Update: Partial<Database['public']['Tables']['whatsapp_conversations']['Insert']>;
+        Relationships: [];
       };
       reviews: {
         Row: {
@@ -133,11 +158,17 @@ export interface Database {
           rating: number;
           title: string | null;
           body: string | null;
+          is_verified_purchase: boolean;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['reviews']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['reviews']['Insert']>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
