@@ -285,7 +285,7 @@ export function StoreClient({
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {initialProducts.map((p) => <ProductCard key={p.id} product={p} locale={locale} />)}
+            {initialProducts.map((p, i) => <ProductCard key={p.id} product={p} locale={locale} priority={i < 4} />)}
           </div>
         ) : (
           <div className="flex flex-col gap-3">

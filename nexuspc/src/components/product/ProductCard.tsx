@@ -14,9 +14,10 @@ import { toast } from 'sonner';
 interface ProductCardProps {
   product: Product;
   locale: string;
+  priority?: boolean;
 }
 
-export function ProductCard({ product, locale }: ProductCardProps) {
+export function ProductCard({ product, locale, priority = false }: ProductCardProps) {
   const t = useTranslations('product');
   const tc = useTranslations('common');
   const { addItem } = useCart();
@@ -63,6 +64,9 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           alt={name}
           width={400}
           height={400}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          priority={priority}
+          loading={priority ? undefined : 'lazy'}
           className="w-full h-full object-contain p-4 group-hover/card:scale-105 transition-transform duration-300"
         />
       </Link>

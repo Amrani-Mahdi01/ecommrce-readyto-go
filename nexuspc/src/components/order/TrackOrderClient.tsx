@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import {
   Search, Package, CheckCircle2, XCircle, Phone, Star,
@@ -124,7 +125,7 @@ function OrderDetail({ order, locale, isRTL, t, reviewedProductIds = [] }: {
                 <div key={i} className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <div className="w-12 h-12 bg-muted/30 border border-border/40 shrink-0 overflow-hidden flex items-center justify-center">
                     {item.product_snapshot?.image
-                      ? <img src={item.product_snapshot.image} alt="" className="w-full h-full object-contain p-1" />
+                      ? <Image src={item.product_snapshot.image} alt="" width={48} height={48} className="w-full h-full object-contain p-1" loading="lazy" />
                       : <Package className="h-5 w-5 text-muted-foreground/30" />}
                   </div>
                   <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
