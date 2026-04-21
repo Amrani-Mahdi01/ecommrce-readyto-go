@@ -89,7 +89,7 @@ async function getBestSellerProducts(): Promise<Product[]> {
 
     // Count reviews per product
     const countMap: Record<string, number> = {};
-    for (const r of reviewStats ?? []) {
+    for (const r of (reviewStats ?? []) as { product_id: string }[]) {
       countMap[r.product_id] = (countMap[r.product_id] ?? 0) + 1;
     }
 
