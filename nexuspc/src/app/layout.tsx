@@ -20,7 +20,15 @@ export const metadata: Metadata = {
   title: 'NexusPC',
   description: "Algeria's premier gaming PC parts store",
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.png',
+    other: [
+      { rel: 'manifest', url: '/site.webmanifest' },
+    ],
   },
 };
 
