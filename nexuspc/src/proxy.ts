@@ -8,6 +8,11 @@ const intlMiddleware = createMiddleware(routing);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Static files that must not be locale-prefixed
+  if (pathname === '/sitemap.xml' || pathname === '/robots.txt' || pathname.endsWith('.html')) {
+    return NextResponse.next();
+  }
+
   // Auth callback — bypass intl middleware so the route isn't locale-prefixed
   if (pathname.startsWith('/auth/callback')) {
     const { supabaseResponse } = await updateSession(request);
