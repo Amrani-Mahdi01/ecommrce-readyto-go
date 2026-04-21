@@ -9,9 +9,10 @@ interface Props {
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'default' | 'sm' | 'lg';
   label?: string;
+  iconOnly?: boolean;
 }
 
-export function DownloadInvoiceButton({ orderId, locale, variant = 'outline', size = 'default', label }: Props) {
+export function DownloadInvoiceButton({ orderId, locale, variant = 'outline', size = 'default', label, iconOnly }: Props) {
   const isRTL = locale === 'ar';
   const defaultLabel = isRTL ? 'تحميل الفاتورة' : 'Download Receipt';
 
@@ -20,9 +21,9 @@ export function DownloadInvoiceButton({ orderId, locale, variant = 'outline', si
   };
 
   return (
-    <Button variant={variant} size={size} onClick={handleClick} className="gap-2">
+    <Button variant={variant} size={size} onClick={handleClick} className="gap-2" title={iconOnly ? defaultLabel : undefined}>
       <Download className="h-4 w-4" />
-      {label ?? defaultLabel}
+      {!iconOnly && (label ?? defaultLabel)}
     </Button>
   );
 }

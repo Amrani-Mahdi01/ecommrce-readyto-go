@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { ProductDetailClient } from '@/components/product/ProductDetailClient';
+import { getProductReviews, getReviewEligibility } from '@/app/actions/reviews';
 import type { Product } from '@/types/product';
 
 interface PageProps {
@@ -89,8 +90,10 @@ export default async function ProductPage({ params }: PageProps) {
   const product = await getProduct(slug);
   if (!product) notFound();
 
-  const [related] = await Promise.all([
+  const [related, reviews, eligibility] = await Promise.all([
     getRelated(product),
+    getProductReviews(product.id),
+    getReviewEligibility(product.id),
     getTranslations({ locale, namespace: 'product' }),
   ]);
 
@@ -128,6 +131,8 @@ export default async function ProductPage({ params }: PageProps) {
         product={product}
         related={related}
         locale={locale}
+        reviews={reviews}
+        eligibility={eligibility}
       />
     </>
   );

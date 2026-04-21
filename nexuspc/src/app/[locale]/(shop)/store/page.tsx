@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { StoreClient } from '@/components/store/StoreClient';
+import { withReviewStats } from '@/lib/product-reviews';
 import type { Product } from '@/types/product';
 
 interface PageProps {
@@ -102,11 +103,8 @@ async function getProducts(filters: {
     query = query.range(from, from + PAGE_SIZE - 1);
 
     const { data, count } = await query;
-    return {
-      products: (data ?? []) as Product[],
-      total: count ?? 0,
-      brands,
-    };
+    const products = await withReviewStats((data ?? []) as Product[]);
+    return { products, total: count ?? 0, brands };
   } catch {
     return { products: [], total: 0, brands: [] };
   }

@@ -16,5 +16,5 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CheckoutSuccessPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
   const sp = await searchParams;
-  return <OrderSuccessClient locale={locale} orderNumber={sp.order} phone={sp.phone} />;
+  return <OrderSuccessClient locale={locale} orderNumber={sp.order} phone={sp.phone} paymentMethod={sp.payment} />;
 }

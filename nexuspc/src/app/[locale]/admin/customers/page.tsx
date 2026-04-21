@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { AdminCustomersClient } from '@/components/admin/AdminCustomersClient';
+import { getBlockedIps } from '@/app/actions/place-order';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -53,7 +54,7 @@ async function getCustomers() {
 export default async function AdminCustomersPage({ params }: PageProps) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'admin' });
-  const customers = await getCustomers();
+  const [customers, blockedIps] = await Promise.all([getCustomers(), getBlockedIps()]);
 
   return (
     <div className={`p-6 ${locale === 'ar' ? 'font-cairo' : ''}`}>
@@ -63,7 +64,7 @@ export default async function AdminCustomersPage({ params }: PageProps) {
           {customers.length} {locale === 'ar' ? 'عميل' : 'customers'}
         </span>
       </div>
-      <AdminCustomersClient customers={customers} locale={locale} />
+      <AdminCustomersClient customers={customers} blockedIps={blockedIps} locale={locale} />
     </div>
   );
 }

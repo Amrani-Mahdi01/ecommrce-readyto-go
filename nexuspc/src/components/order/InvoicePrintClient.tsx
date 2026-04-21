@@ -17,6 +17,7 @@ interface Order {
   status: string;
   payment_status?: string;
   payment_method?: string;
+  chargily_checkout_id?: string;
   total: number;
   delivery_price?: number;
   full_name: string;
@@ -90,7 +91,9 @@ export function InvoicePrintClient({ order, locale }: { order: Order; locale: st
         .totals-row .label { color: #666; }
 
         /* Payment badge */
-        .paid-badge { display: inline-block; background: #d1fae5; color: #065f46; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 24px; }
+        .paid-badge { display: inline-block; background: #d1fae5; color: #065f46; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+        .chargily-ref { font-size: 11px; color: #666; margin-bottom: 20px; }
+        .chargily-ref span { font-family: monospace; font-size: 12px; color: #7c3aed; font-weight: 600; }
 
         /* Footer */
         .footer { border-top: 1px solid #eee; padding-top: 16px; text-align: center; color: #aaa; font-size: 11px; }
@@ -139,13 +142,24 @@ export function InvoicePrintClient({ order, locale }: { order: Order; locale: st
                 ? (isRTL ? 'دفع إلكتروني (Chargily)' : 'Online — Chargily')
                 : (isRTL ? 'الدفع عند الاستلام' : 'Cash on Delivery')}
             </div>
+            {order.chargily_checkout_id && (
+              <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#7c3aed', marginTop: 4, wordBreak: 'break-all' }}>
+                {order.chargily_checkout_id}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Paid badge */}
+        {/* Paid badge + Chargily reference */}
         <div className="paid-badge">
           {isRTL ? '✓ مدفوع' : '✓ PAID'}
         </div>
+        {order.chargily_checkout_id && (
+          <div className="chargily-ref">
+            {isRTL ? 'مرجع الدفع الإلكتروني: ' : 'Online Payment Reference: '}
+            <span>{order.chargily_checkout_id}</span>
+          </div>
+        )}
 
         {/* Items */}
         <div className="section-title">{isRTL ? 'تفاصيل الطلب' : 'Order Items'}</div>

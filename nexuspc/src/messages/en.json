@@ -123,6 +123,7 @@
     "orderIdPlaceholder": "e.g. NPC-000042",
     "phone": "Phone Number",
     "status": "Status",
+    "pending_payment": "Awaiting Payment",
     "placed": "Order Placed",
     "confirmed": "Confirmed",
     "processing": "Processing",

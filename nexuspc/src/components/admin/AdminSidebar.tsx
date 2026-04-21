@@ -74,7 +74,7 @@ export function AdminSidebar({ locale, labels }: SidebarProps) {
     pathnameRef.current = pathname;
   }, [pathname]);
 
-  // On mount: count orders that arrived since last visit
+  // On mount: count real orders (exclude pending_payment) that arrived since last visit
   useEffect(() => {
     const supabase = createClient();
     const lastSeen = getLastSeen();
@@ -83,19 +83,20 @@ export function AdminSidebar({ locale, labels }: SidebarProps) {
       .from('orders')
       .select('id', { count: 'exact', head: true })
       .gt('created_at', lastSeen)
+      .neq('status', 'pending_payment')
       .then(({ count }) => {
         if (count && count > 0) setNewOrderCount(count);
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Mark all seen + clear badge when user navigates to orders page
+  // Listen for explicit "mark seen" event dispatched by the bell button in AdminOrdersClient
   useEffect(() => {
-    if (pathname?.includes('/admin/orders')) {
-      markAllSeen();
-    }
+    const handler = () => markAllSeen();
+    window.addEventListener('admin-orders-cleared', handler);
+    return () => window.removeEventListener('admin-orders-cleared', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, []);
 
   // Global new-order watcher — realtime for orders that come in during the session
   useEffect(() => {
@@ -109,12 +110,37 @@ export function AdminSidebar({ locale, labels }: SidebarProps) {
         { event: 'INSERT', schema: 'public', table: 'orders' },
         (payload) => {
           const order = payload.new as any;
+          // Skip pending_payment — online orders only count after webhook confirms them
+          if (order.status === 'pending_payment') return;
           if (knownIds.has(order.id)) return;
           knownIds.add(order.id);
 
-          const onOrdersPage = pathnameRef.current?.includes('/admin/orders');
+          setNewOrderCount((c) => c + 1);
+          playNotificationSound();
+          toast.success(
+            <div className="flex flex-col gap-0.5">
+              <span className="font-bold">
+                {locale === 'ar' ? 'طلب جديد!' : 'New Order!'}
+              </span>
+              <span className="text-xs opacity-80">
+                {order.order_number} — {order.full_name} — {formatPrice(order.total)}
+              </span>
+            </div>,
+            { duration: 8000, icon: '🛒' },
+          );
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'orders' },
+        (payload) => {
+          const order = payload.new as any;
+          const oldStatus = (payload.old as any)?.status;
+          // Online payment confirmed by webhook: was pending_payment, now a real order
+          if (oldStatus === 'pending_payment' && order.status !== 'pending_payment') {
+            if (knownIds.has(order.id)) return;
+            knownIds.add(order.id);
 
-          if (!onOrdersPage) {
             setNewOrderCount((c) => c + 1);
             playNotificationSound();
             toast.success(

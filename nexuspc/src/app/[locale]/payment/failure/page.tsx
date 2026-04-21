@@ -34,7 +34,7 @@ export default async function PaymentFailurePage({ params, searchParams }: PageP
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-display font-black text-4xl uppercase text-white">
+          <h1 className="font-black text-4xl uppercase text-white">
             {isRTL ? 'فشل الدفع' : 'Payment Failed'}
           </h1>
           <p className="text-zinc-400 text-sm">

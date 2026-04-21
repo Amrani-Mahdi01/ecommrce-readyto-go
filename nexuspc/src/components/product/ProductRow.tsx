@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, PackageX, Star } from 'lucide-react';
+import { ShoppingCart, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,9 +22,13 @@ export function ProductRow({ product, locale }: ProductRowProps) {
   const { addItem } = useCart();
 
   const name = locale === 'ar' ? product.name_ar : product.name_en;
-  const desc = locale === 'ar' ? product.description_ar : product.description_en;
+  const rawDesc = locale === 'ar' ? product.description_ar : product.description_en;
+  // Strip HTML tags for the plain-text preview snippet
+  const desc = rawDesc ? rawDesc.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : null;
   const image = product.images[0] ?? null;
   const inStock = product.stock_qty > 0;
+  const reviewCount = product.review_count ?? 0;
+  const filledStars = Math.round(product.avg_rating ?? 0);
   const hasDiscount = product.compare_price && product.compare_price > product.price;
   const discountPct = hasDiscount
     ? Math.round((1 - product.price / product.compare_price!) * 100)
@@ -43,18 +47,12 @@ export function ProductRow({ product, locale }: ProductRowProps) {
         href={`/${locale}/store/product/${product.slug}`}
         className="shrink-0 relative w-28 h-28 sm:w-36 sm:h-36 overflow-hidden bg-muted/30"
       >
-        {image ? (
-          <Image
-            src={image}
-            alt={name}
-            fill
-            className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
-            <PackageX className="h-10 w-10" />
-          </div>
-        )}
+        <Image
+          src={image ?? '/product-placeholder.svg'}
+          alt={name}
+          fill
+          className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+        />
         {hasDiscount && (
           <Badge className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-none">
             -{discountPct}%
@@ -83,9 +81,11 @@ export function ProductRow({ product, locale }: ProductRowProps) {
         )}
         <div className="flex items-center gap-1">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`} />
+            <Star key={i} className={`h-3 w-3 ${i < filledStars ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20'}`} />
           ))}
-          <span className="text-[10px] text-muted-foreground ml-1">(0)</span>
+          {reviewCount > 0 && (
+            <span className="text-[10px] text-muted-foreground ml-1">({reviewCount})</span>
+          )}
         </div>
       </div>
 

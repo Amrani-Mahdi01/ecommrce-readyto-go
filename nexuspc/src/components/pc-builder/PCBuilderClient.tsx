@@ -229,7 +229,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
       {/* Header */}
       <div className="border-b border-border/40 bg-zinc-950 py-12">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display font-black text-4xl uppercase text-white mb-2">{t('title')}</h1>
+          <h1 className="font-black text-4xl uppercase text-white mb-2">{t('title')}</h1>
           <p className="text-zinc-400 text-sm">{t('subtitle')}</p>
         </div>
       </div>
@@ -473,7 +473,7 @@ export function PCBuilderClient({ locale, productsBySlot: productsBySlot_prop, a
           <div className="lg:col-span-1">
             <div className="sticky top-20 border border-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border/60">
-                <h2 className={`font-display font-bold text-lg uppercase mb-1 ${isRTL ? 'text-right' : ''}`}>
+                <h2 className={`font-bold text-lg uppercase mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {locale === 'ar' ? 'ملخص البناء' : 'Build Summary'}
                 </h2>
                 <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : ''}`}>

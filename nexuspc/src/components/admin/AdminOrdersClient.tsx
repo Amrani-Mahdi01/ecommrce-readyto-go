@@ -6,14 +6,17 @@ import {
   X, Truck, Building2, Package, User, Phone, MapPin,
   MessageSquare, ChevronDown, Calendar, Loader2,
   TrendingUp, ShoppingBag, PhoneCall, MessageCircle,
-  CheckCheck, Clock, AlertCircle,
+  CheckCheck, Clock, AlertCircle, Receipt,
+  Banknote, CreditCard, ShieldX, ShieldCheck,
 } from 'lucide-react';
+import { DownloadInvoiceButton } from '@/components/order/DownloadInvoiceButton';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { updateOrderStatus } from '@/app/actions/orders';
+import { blockIp, unblockIp, getBlockedIps } from '@/app/actions/place-order';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -58,8 +61,19 @@ interface Order {
   total: number;
   delivery_type?: string;
   delivery_price?: number;
+  payment_method?: 'cod' | 'online';
+  payment_status?: string;
+  chargily_checkout_id?: string;
   status: string;
   items?: OrderItem[];
+  created_at: string;
+  ip_address?: string;
+}
+
+interface BlockedIp {
+  ip: string;
+  reason: string | null;
+  blocked_by: string;
   created_at: string;
 }
 
@@ -300,6 +314,32 @@ function OrderPanel({
             </div>
           </div>
 
+          {/* Payment method */}
+          <div className="px-5 py-4 border-b border-border/40 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              {locale === 'ar' ? 'طريقة الدفع' : 'Payment Method'}
+            </p>
+            {order.payment_method === 'online' ? (
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                <CreditCard className="h-4 w-4" />
+                {locale === 'ar' ? 'دفع إلكتروني (Chargily)' : 'Online Payment (Chargily)'}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400">
+                <Banknote className="h-4 w-4" />
+                {locale === 'ar' ? 'الدفع عند التسليم' : 'Cash on Delivery'}
+              </span>
+            )}
+            {order.chargily_checkout_id && (
+              <div className="mt-2 rounded-lg bg-muted/40 border border-border/40 px-3 py-2">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                  {locale === 'ar' ? 'معرّف الدفع (Chargily)' : 'Chargily Payment ID'}
+                </p>
+                <p className="font-mono text-xs text-foreground break-all select-all">{order.chargily_checkout_id}</p>
+              </div>
+            )}
+          </div>
+
           {/* Delivery */}
           <div className="px-5 py-4 border-b border-border/40 space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
@@ -423,6 +463,7 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
   const [search, setSearch]             = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [deliveryFilter, setDeliveryFilter] = useState('');
+  const [paymentFilter, setPaymentFilter] = useState('');
   const [updating, setUpdating]         = useState<string | null>(null);
   const [newCount, setNewCount]         = useState(0);
   const [newIds, setNewIds]             = useState<Set<string>>(new Set());
@@ -430,7 +471,30 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
   const [openOrder, setOpenOrder]       = useState<Order | null>(null);
   const [bulkStatus, setBulkStatus]     = useState('');
   const [bulkUpdating, setBulkUpdating] = useState(false);
+  const [blockedIps, setBlockedIps]     = useState<BlockedIp[]>([]);
+  const [showBlockedIps, setShowBlockedIps] = useState(false);
   const knownIds = useRef(new Set(initialOrders.map(o => o.id)));
+
+  // On mount (client only): mark orders newer than last_seen as new so red rows
+  // appear when navigating here after seeing the sidebar badge notification.
+  useEffect(() => {
+    try {
+      const lastSeen = localStorage.getItem('admin_orders_last_seen') ?? new Date(0).toISOString();
+      const unseenIds = initialOrders
+        .filter(o => o.created_at > lastSeen)
+        .map(o => o.id);
+      if (unseenIds.length > 0) {
+        setNewIds(new Set(unseenIds));
+        setNewCount(unseenIds.length);
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load blocked IPs on mount
+  useEffect(() => {
+    getBlockedIps().then(setBlockedIps);
+  }, []);
 
   // ── Date range ──
   const [dateFrom, setDateFrom] = useState(defaultFrom);
@@ -524,7 +588,8 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
       o.wilaya.toLowerCase().includes(q);
     const matchStatus   = !statusFilter   || o.status === statusFilter;
     const matchDelivery = !deliveryFilter || (o.delivery_type ?? 'home') === deliveryFilter;
-    return matchSearch && matchStatus && matchDelivery;
+    const matchPayment  = !paymentFilter  || (o.payment_method ?? 'cod') === paymentFilter;
+    return matchSearch && matchStatus && matchDelivery && matchPayment;
   });
 
   // Status counts for the whole loaded set (not filtered)
@@ -620,13 +685,30 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
         <div className="flex items-center gap-2 flex-wrap">
           {newCount > 0 && (
             <button
-              onClick={() => { setNewCount(0); setNewIds(new Set()); }}
+              onClick={() => {
+                setNewCount(0);
+                setNewIds(new Set());
+                // Persist seen timestamp + sync sidebar badge
+                try { localStorage.setItem('admin_orders_last_seen', new Date().toISOString()); } catch {}
+                window.dispatchEvent(new Event('admin-orders-cleared'));
+              }}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-bold animate-pulse hover:animate-none hover:bg-red-600 transition-colors"
             >
               <Bell className="h-3.5 w-3.5" />
               {newCount} {locale === 'ar' ? 'طلب جديد' : newCount === 1 ? 'new order' : 'new orders'}
             </button>
           )}
+          <button
+            onClick={() => setShowBlockedIps(v => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+              showBlockedIps
+                ? 'bg-destructive text-destructive-foreground border-destructive'
+                : 'bg-background text-muted-foreground border-input hover:text-foreground hover:border-foreground/40'
+            }`}
+          >
+            <ShieldX className="h-3.5 w-3.5" />
+            {locale === 'ar' ? `IPs المحظورة (${blockedIps.length})` : `Blocked IPs (${blockedIps.length})`}
+          </button>
           <span className="text-sm text-muted-foreground">
             {filtered.length} {locale === 'ar' ? 'طلب' : 'orders'}
           </span>
@@ -635,6 +717,69 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
 
       {/* ── KPI cards ── */}
       <KpiCards orders={orders} locale={locale} />
+
+      {/* ── Blocked IPs panel ── */}
+      {showBlockedIps && (
+        <div className="rounded-xl border border-destructive/40 bg-card overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-destructive/20 bg-destructive/5">
+            <div className="flex items-center gap-2">
+              <ShieldX className="h-4 w-4 text-destructive" />
+              <span className="text-sm font-bold text-destructive">
+                {locale === 'ar' ? 'عناوين IP المحظورة' : 'Blocked IP Addresses'}
+              </span>
+            </div>
+            <span className="text-xs text-muted-foreground">{blockedIps.length}</span>
+          </div>
+          {blockedIps.length === 0 ? (
+            <p className="p-5 text-sm text-muted-foreground text-center">
+              {locale === 'ar' ? 'لا توجد عناوين IP محظورة' : 'No blocked IP addresses'}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" dir={isRTL ? 'rtl' : 'ltr'}>
+                <thead>
+                  <tr className="border-b border-border/60 bg-muted/20">
+                    {(isRTL
+                      ? ['عنوان IP', 'السبب', 'بواسطة', 'التاريخ', 'إجراء']
+                      : ['IP Address', 'Reason', 'Blocked By', 'Date', 'Action']
+                    ).map(h => (
+                      <th key={h} className={`px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wide whitespace-nowrap ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {blockedIps.map(entry => (
+                    <tr key={entry.ip} className="border-b border-border/30 last:border-0 hover:bg-muted/10">
+                      <td className="px-4 py-3 font-mono text-xs text-destructive font-semibold">{entry.ip}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{entry.reason ?? '—'}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{entry.blocked_by}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
+                        {new Date(entry.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'en-GB')}
+                      </td>
+                      <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                        <button
+                          onClick={async () => {
+                            const { error } = await unblockIp(entry.ip);
+                            if (error) { toast.error(error); return; }
+                            setBlockedIps(prev => prev.filter(b => b.ip !== entry.ip));
+                            toast.success(locale === 'ar' ? 'تم رفع الحظر' : 'IP unblocked');
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-emerald-600 border border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                        >
+                          <ShieldCheck className="h-3 w-3" />
+                          {locale === 'ar' ? 'رفع الحظر' : 'Unblock'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Status pills ── */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -699,6 +844,28 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               }`}
             >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Payment method toggle */}
+        <div className="flex h-9 rounded-lg border border-input bg-background overflow-hidden text-xs font-medium">
+          {[
+            { value: '',       label: isRTL ? 'الكل'       : 'All',    icon: null },
+            { value: 'cod',    label: isRTL ? 'عند التسليم' : 'COD',   icon: <Banknote className="h-3 w-3" /> },
+            { value: 'online', label: isRTL ? 'أونلاين'    : 'Online', icon: <CreditCard className="h-3 w-3" /> },
+          ].map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setPaymentFilter(opt.value)}
+              className={`flex items-center gap-1 px-3 transition-colors ${
+                paymentFilter === opt.value
+                  ? 'bg-foreground text-background'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`}
+            >
+              {opt.icon}
               {opt.label}
             </button>
           ))}
@@ -875,8 +1042,8 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
                           </button>
                         </th>
                         {(isRTL
-                          ? ['رقم الطلب', 'العميل', 'الهاتف', 'الولاية', 'التوصيل', 'المجموع', 'الحالة', 'الوقت']
-                          : ['Order #', 'Customer', 'Phone', 'Wilaya', 'Delivery', 'Total', 'Status', 'Time']
+                          ? ['رقم الطلب', 'العميل', 'الهاتف', 'الولاية', 'التوصيل', 'الدفع', 'المجموع', 'الحالة', 'الوقت', 'فاتورة', 'الحماية']
+                          : ['Order #', 'Customer', 'Phone', 'Wilaya', 'Delivery', 'Payment', 'Total', 'Status', 'Time', 'Invoice', 'Guard']
                         ).map(h => (
                           <th key={h} className={`px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wide whitespace-nowrap ${isRTL ? 'text-right' : 'text-left'}`}>
                             {h}
@@ -943,6 +1110,21 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
                               </span>
                             </td>
 
+                            {/* Payment method */}
+                            <td className="px-4 py-3">
+                              {order.payment_method === 'online' ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                  <CreditCard className="h-3 w-3" />
+                                  {locale === 'ar' ? 'أونلاين' : 'Online'}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                  <Banknote className="h-3 w-3" />
+                                  {locale === 'ar' ? 'عند التسليم' : 'COD'}
+                                </span>
+                              )}
+                            </td>
+
                             <td className="px-4 py-3 font-semibold">{formatPrice(order.total)}</td>
 
                             {/* Status */}
@@ -957,6 +1139,56 @@ export function AdminOrdersClient({ locale, orders: initialOrders }: { locale: s
                               {new Date(order.created_at).toLocaleTimeString(
                                 locale === 'ar' ? 'ar-DZ' : 'en-GB',
                                 { hour: '2-digit', minute: '2-digit' },
+                              )}
+                            </td>
+
+                            {/* Invoice */}
+                            <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                              <DownloadInvoiceButton
+                                orderId={order.id}
+                                locale={locale}
+                                variant="ghost"
+                                size="sm"
+                                iconOnly
+                              />
+                            </td>
+
+                            {/* Guard — blocked / clean */}
+                            <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                              {order.ip_address && order.ip_address !== 'unknown' ? (
+                                blockedIps.some(b => b.ip === order.ip_address) ? (
+                                  <button
+                                    onClick={async () => {
+                                      const ip = order.ip_address!;
+                                      const { error } = await unblockIp(ip);
+                                      if (error) { toast.error(error); return; }
+                                      setBlockedIps(prev => prev.filter(b => b.ip !== ip));
+                                      toast.success(locale === 'ar' ? 'تم رفع الحظر' : 'IP unblocked');
+                                    }}
+                                    title={locale === 'ar' ? 'رفع الحظر' : 'Unblock IP'}
+                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                                  >
+                                    <ShieldX className="h-3 w-3" />
+                                    {locale === 'ar' ? 'محظور' : 'Blocked'}
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={async () => {
+                                      const ip = order.ip_address!;
+                                      const { error } = await blockIp(ip, 'Manual block by admin');
+                                      if (error) { toast.error(error); return; }
+                                      setBlockedIps(prev => prev.some(b => b.ip === ip) ? prev : [{ ip, reason: 'Manual block by admin', blocked_by: 'admin', created_at: new Date().toISOString() }, ...prev]);
+                                      toast.success(locale === 'ar' ? 'تم الحظر' : 'IP blocked');
+                                    }}
+                                    title={locale === 'ar' ? 'حظر عنوان IP' : 'Block IP'}
+                                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                                  >
+                                    <ShieldCheck className="h-3 w-3" />
+                                    {locale === 'ar' ? 'سليم' : 'Clean'}
+                                  </button>
+                                )
+                              ) : (
+                                <span className="text-[11px] text-muted-foreground/30">—</span>
                               )}
                             </td>
                           </tr>

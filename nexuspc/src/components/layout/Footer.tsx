@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Zap } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
 import { categories } from '@/config/categories';
 import { siteConfig } from '@/config/site';
 
@@ -22,32 +21,52 @@ export async function Footer({ locale }: FooterProps) {
 
   const topCategories = categories.slice(0, 5);
 
+  const supportLinks = [
+    {
+      href: `/${locale}/track-order`,
+      label: locale === 'ar' ? 'تتبع طلبك' : 'Track Order',
+    },
+  ];
+
   return (
-    <footer className="border-t border-border/40 bg-card mt-auto">
-      <div className="container mx-auto px-4 py-12">
-        <div
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 ${isRTL ? 'text-right' : ''}`}
-        >
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link href={`/${locale}`} className="flex items-center gap-2 font-bold text-lg mb-3 w-fit">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Zap className="h-4 w-4 fill-current" />
+    <footer className="bg-zinc-950 text-zinc-100 mt-auto">
+      {/* ── Top strip ── */}
+      <div className="border-b border-white/10">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-center">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold">
+            {locale === 'ar'
+              ? 'التوصيل لجميع الولايات — الدفع عند الاستلام — الجزائر'
+              : 'Delivery to all 58 wilayas — Cash on delivery — Algeria'}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Main grid ── */}
+      <div className={`container mx-auto px-4 pt-16 pb-0 ${isRTL ? 'text-right' : ''}`}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+          {/* Brand column */}
+          <div className="lg:col-span-5 flex flex-col">
+            <Link href={`/${locale}`} className="flex items-center gap-3 w-fit mb-6">
+              <div className="w-9 h-9 bg-primary flex items-center justify-center shrink-0">
+                <Zap className="h-4 w-4 fill-white text-white" />
               </div>
-              <span className="bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent">
+              <span className="font-black text-xl uppercase tracking-widest text-zinc-100">
                 NexusPC
               </span>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+
+            <p className="text-zinc-400 text-sm max-w-sm mb-6 leading-relaxed">
               {locale === 'ar' ? siteConfig.description_ar : siteConfig.description_en}
             </p>
-            <div className="flex gap-3">
+
+            <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <a
                 href={siteConfig.links.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
+                className="border border-white/20 px-4 py-2 text-xs uppercase tracking-wider font-semibold hover:border-primary hover:text-primary transition-colors text-zinc-300"
               >
                 Instagram
               </a>
@@ -56,86 +75,101 @@ export async function Footer({ locale }: FooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
+                className="border border-white/20 px-4 py-2 text-xs uppercase tracking-wider font-semibold hover:border-primary hover:text-primary transition-colors text-zinc-300"
               >
                 Facebook
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">
-              {locale === 'ar' ? 'روابط سريعة' : 'Quick Links'}
-            </h3>
-            <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Links columns */}
+          <div className="lg:col-span-7 grid grid-cols-3 gap-8">
+            {/* Quick Links */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-5 flex items-center gap-2">
+                <span className="text-primary font-bold">01</span>
+                {locale === 'ar' ? 'روابط سريعة' : 'Quick Links'}
+              </p>
+              <ul className="space-y-3">
+                {quickLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-zinc-400 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Categories */}
-          <div>
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">
-              {locale === 'ar' ? 'الفئات' : 'Categories'}
-            </h3>
-            <ul className="space-y-2">
-              {topCategories.map((cat) => (
-                <li key={cat.slug}>
-                  <Link
-                    href={`/${locale}/store/${cat.slug}`}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {locale === 'ar' ? cat.name_ar : cat.name_en}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Categories */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-5 flex items-center gap-2">
+                <span className="text-primary font-bold">02</span>
+                {locale === 'ar' ? 'الفئات' : 'Categories'}
+              </p>
+              <ul className="space-y-3">
+                {topCategories.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/${locale}/store/${cat.slug}`}
+                      className="text-sm text-zinc-400 hover:text-white transition-colors"
+                    >
+                      {locale === 'ar' ? cat.name_ar : cat.name_en}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Support */}
-          <div>
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">
-              {locale === 'ar' ? 'الدعم' : 'Support'}
-            </h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link
-                  href={`/${locale}/track-order`}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {locale === 'ar' ? 'تتبع طلبك' : 'Track Order'}
-                </Link>
-              </li>
-              <li className="leading-relaxed">
-                {locale === 'ar' ? 'الدفع عند الاستلام فقط' : 'Cash on Delivery only'}
-              </li>
-              <li className="leading-relaxed">
-                {locale === 'ar' ? 'التوصيل لجميع الولايات' : 'Delivery to all 58 wilayas'}
-              </li>
-            </ul>
+            {/* Support */}
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-5 flex items-center gap-2">
+                <span className="text-primary font-bold">03</span>
+                {locale === 'ar' ? 'الدعم' : 'Support'}
+              </p>
+              <ul className="space-y-3 text-sm text-zinc-400">
+                {supportLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="hover:text-white transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+                <li className="leading-relaxed">
+                  {locale === 'ar' ? 'الدفع عند الاستلام فقط' : 'Cash on Delivery only'}
+                </li>
+                <li className="leading-relaxed">
+                  {locale === 'ar' ? 'التوصيل لجميع الولايات' : 'Delivery to all 58 wilayas'}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <Separator className="my-8" />
+        {/* ── Giant wordmark ── */}
+        <div className="pt-8 pb-2 border-t border-white/10 overflow-hidden mt-12">
+          <p
+            className="font-black uppercase leading-none select-none text-transparent"
+            style={{
+              fontSize: 'clamp(3rem, 14vw, 10rem)',
+              WebkitTextStroke: '1px rgba(139,92,246,0.2)',
+            }}
+          >
+            NEXUSPC
+          </p>
+        </div>
 
-        <div
-          className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground"
-        >
+        {/* ── Bottom bar ── */}
+        <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} justify-between items-center py-4 border-t border-white/10 text-xs text-zinc-600`}>
           <p>
             {locale === 'ar'
               ? `© ${new Date().getFullYear()} NexusPC الجزائر — جميع الحقوق محفوظة`
               : `© ${new Date().getFullYear()} NexusPC Algeria — All rights reserved`}
           </p>
-          <p className="text-primary/70">
+          <p className="text-primary/60">
             {locale === 'ar' ? 'صُنع في الجزائر 🇩🇿' : 'Made in Algeria 🇩🇿'}
           </p>
         </div>

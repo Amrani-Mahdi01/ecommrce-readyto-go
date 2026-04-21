@@ -4,6 +4,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { CartProvider } from '@/context/CartContext';
+import { CartDrawerProvider } from '@/context/CartDrawerContext';
+import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { LocaleSync } from '@/components/layout/LocaleSync';
@@ -74,10 +76,13 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <NextIntlClientProvider messages={messages}>
       <LocaleSync />
       <CartProvider>
-        <Navbar locale={locale} initialUser={user} initialProfile={profile} />
-        <main className="flex-1">{children}</main>
-        <Footer locale={locale} />
-        <Toaster richColors position={isRTL ? 'bottom-left' : 'bottom-right'} />
+        <CartDrawerProvider>
+          <Navbar locale={locale} initialUser={user} initialProfile={profile} />
+          <main className="flex-1">{children}</main>
+          <Footer locale={locale} />
+          <CartDrawer locale={locale} />
+          <Toaster richColors position={isRTL ? 'bottom-left' : 'bottom-right'} />
+        </CartDrawerProvider>
       </CartProvider>
     </NextIntlClientProvider>
   );

@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2, Package, Home } from 'lucide-react';
+import { CheckCircle2, Package, Home, CreditCard, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 
@@ -11,9 +10,11 @@ interface OrderSuccessClientProps {
   locale: string;
   orderNumber?: string;
   phone?: string;
+  paymentMethod?: string;
 }
 
-export function OrderSuccessClient({ locale, orderNumber, phone }: OrderSuccessClientProps) {
+export function OrderSuccessClient({ locale, orderNumber, phone, paymentMethod }: OrderSuccessClientProps) {
+  const isOnlinePayment = paymentMethod === 'online';
   const t = useTranslations('checkout');
   const isRTL = locale === 'ar';
 
@@ -39,7 +40,7 @@ export function OrderSuccessClient({ locale, orderNumber, phone }: OrderSuccessC
         </div>
 
         <div>
-          <h1 className="font-display font-black text-4xl uppercase text-white mb-3">{t('successTitle')}</h1>
+          <h1 className="font-black text-4xl uppercase text-white mb-3">{t('successTitle')}</h1>
           {phone && (
             <p className="text-zinc-400 text-sm mt-2">
               {t('successMessage', { phone })}
@@ -47,11 +48,30 @@ export function OrderSuccessClient({ locale, orderNumber, phone }: OrderSuccessC
           )}
         </div>
 
+        {/* Online payment notice */}
+        {isOnlinePayment && (
+          <div className="border border-primary/30 bg-primary/5 p-4 text-left">
+            <div className="flex items-start gap-3">
+              <CreditCard className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-zinc-200 mb-1">
+                  {locale === 'ar' ? 'أكمل الدفع في النافذة الجديدة' : 'Complete payment in the new tab'}
+                </p>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  {locale === 'ar'
+                    ? 'تم فتح بوابة الدفع في نافذة جديدة. بعد إتمام الدفع سيتم تأكيد طلبك تلقائياً.'
+                    : 'The payment gateway was opened in a new tab. Your order will be confirmed automatically once payment is complete.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Order number */}
         {orderNumber && (
           <div className="border border-white/10 bg-zinc-900 p-6">
             <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 mb-2">{t('yourOrderNumber')}</p>
-            <p className="font-display font-black text-3xl text-primary tracking-widest font-mono">{orderNumber}</p>
+            <p className="font-black text-3xl text-primary tracking-widest font-mono">{orderNumber}</p>
             <p className="text-xs text-zinc-500 mt-2">
               {locale === 'ar'
                 ? 'احتفظ بهذا الرقم لتتبع طلبك'
@@ -59,6 +79,23 @@ export function OrderSuccessClient({ locale, orderNumber, phone }: OrderSuccessC
             </p>
           </div>
         )}
+
+        {/* Review reminder */}
+        <div className={`border border-primary/20 bg-primary/5 p-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <div className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Star className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-zinc-200 mb-1">
+                {locale === 'ar' ? 'شارك رأيك في المنتج!' : 'Share your feedback!'}
+              </p>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                {locale === 'ar'
+                  ? 'بعد استلام طلبك، يمكنك العودة وكتابة تقييم للمنتجات التي اشتريتها.'
+                  : 'Once your order is delivered, come back and leave a review on the products you purchased.'}
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div className="flex flex-col gap-3 mt-6">
           {orderNumber && (

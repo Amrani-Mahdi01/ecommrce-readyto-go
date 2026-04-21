@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
         .update({
           status: 'confirmed',
           payment_status: 'paid',
+          chargily_checkout_id: data?.id ?? null,
         } as any)
         .eq('id', orderId)
         .eq('status', 'pending_payment');

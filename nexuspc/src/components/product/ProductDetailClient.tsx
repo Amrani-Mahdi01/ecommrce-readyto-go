@@ -10,16 +10,20 @@ import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/utils';
 import { ProductCard } from '@/components/product/ProductCard';
+import { ReviewsSection } from '@/components/product/ReviewsSection';
 import type { Product } from '@/types/product';
+import type { ReviewWithProfile, ReviewEligibility } from '@/app/actions/reviews';
 import { toast } from 'sonner';
 
 interface ProductDetailClientProps {
   product: Product;
   related: Product[];
   locale: string;
+  reviews: ReviewWithProfile[];
+  eligibility: ReviewEligibility;
 }
 
-export function ProductDetailClient({ product, related, locale }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, related, locale, reviews, eligibility }: ProductDetailClientProps) {
   const t = useTranslations('product');
   const tc = useTranslations('common');
   const tn = useTranslations('nav');
@@ -127,18 +131,23 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
             </div>
 
             {/* Name */}
-            <h1 className="font-display font-black text-2xl sm:text-3xl uppercase leading-tight" dir={isRTL ? 'rtl' : 'ltr'}>
+            <h1 className="font-black text-2xl sm:text-3xl uppercase leading-tight" dir={isRTL ? 'rtl' : 'ltr'}>
               {name}
             </h1>
 
             {/* Rating */}
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`h-4 w-4 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`} />
-                ))}
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const avg = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
+                  return <Star key={i} className={`h-4 w-4 ${i < Math.round(avg) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`} />;
+                })}
               </div>
-              <span className="text-sm text-muted-foreground">{t('noReviews')}</span>
+              <a href="#reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                {reviews.length > 0
+                  ? `${(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)} (${reviews.length})`
+                  : t('noReviews')}
+              </a>
             </div>
 
             {/* Price */}
@@ -242,7 +251,7 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
         {/* ── Specs ── */}
         {specEntries.length > 0 && (
           <div className="mt-12">
-            <h2 className={`font-display font-black text-xl uppercase mb-4 ${isRTL ? 'text-right' : ''}`}>{t('specs')}</h2>
+            <h2 className={`font-black text-xl uppercase mb-4 ${isRTL ? 'text-right' : ''}`}>{t('specs')}</h2>
             <div className="border border-border overflow-hidden">
               <table className="w-full text-sm">
                 <tbody>
@@ -262,10 +271,19 @@ export function ProductDetailClient({ product, related, locale }: ProductDetailC
           </div>
         )}
 
+        {/* ── Reviews ── */}
+        <ReviewsSection
+          productId={product.id}
+          productSlug={product.slug}
+          locale={locale}
+          reviews={reviews}
+          eligibility={eligibility}
+        />
+
         {/* ── Related products ── */}
         {related.length > 0 && (
           <div className="mt-12">
-            <h2 className={`font-display font-black text-xl uppercase mb-6 ${isRTL ? 'text-right' : ''}`}>{t('relatedProducts')}</h2>
+            <h2 className={`font-black text-xl uppercase mb-6 ${isRTL ? 'text-right' : ''}`}>{t('relatedProducts')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} locale={locale} />

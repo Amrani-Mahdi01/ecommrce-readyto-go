@@ -123,6 +123,7 @@
     "orderIdPlaceholder": "مثال: NPC-000042",
     "phone": "رقم الهاتف",
     "status": "الحالة",
+    "pending_payment": "بانتظار الدفع",
     "placed": "تم تقديم الطلب",
     "confirmed": "مؤكد",
     "processing": "قيد المعالجة",

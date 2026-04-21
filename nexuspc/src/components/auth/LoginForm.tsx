@@ -44,9 +44,9 @@ export function LoginForm({ locale }: { locale: string }) {
             <div className="w-7 h-7 bg-primary flex items-center justify-center">
               <Zap className="h-4 w-4 fill-white text-white" />
             </div>
-            <span className="font-display font-black text-lg uppercase tracking-widest text-white">NexusPC</span>
+            <span className="font-black text-lg uppercase tracking-widest text-white">NexusPC</span>
           </Link>
-          <h1 className="font-display font-black text-3xl uppercase text-white mb-2">{t('loginTitle')}</h1>
+          <h1 className="font-black text-3xl uppercase text-white mb-2">{t('loginTitle')}</h1>
           <p className="text-zinc-400 text-sm">{t('loginSubtitle')}</p>
         </div>
 

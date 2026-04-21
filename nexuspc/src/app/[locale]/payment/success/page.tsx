@@ -57,7 +57,7 @@ export default async function PaymentSuccessPage({ params, searchParams }: PageP
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-display font-black text-4xl uppercase text-white">
+          <h1 className="font-black text-4xl uppercase text-white">
             {isRTL ? 'تم الدفع بنجاح!' : 'Payment Successful!'}
           </h1>
           <p className="text-zinc-400 text-sm">

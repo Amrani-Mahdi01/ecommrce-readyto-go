@@ -26,7 +26,7 @@ export function CartPageClient({ locale }: { locale: string }) {
               <ShoppingBag className="h-10 w-10 text-muted-foreground/40" />
             </div>
           </div>
-          <h2 className="font-display font-black text-2xl uppercase">{locale === 'ar' ? 'سلتك فارغة' : 'Your cart is empty'}</h2>
+          <h2 className="font-black text-2xl uppercase">{locale === 'ar' ? 'سلتك فارغة' : 'Your cart is empty'}</h2>
           <p className="text-sm text-muted-foreground">
             {locale === 'ar' ? 'أضف بعض المنتجات للمتابعة' : 'Add some products to continue'}
           </p>
@@ -42,7 +42,7 @@ export function CartPageClient({ locale }: { locale: string }) {
   return (
     <div className={`min-h-screen bg-background py-10 ${isRTL ? 'font-cairo' : ''}`}>
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className={`font-display font-black text-3xl uppercase mb-8 ${isRTL ? 'text-right' : ''}`}>
+        <h1 className={`font-black text-3xl uppercase mb-8 ${isRTL ? 'text-right' : ''}`}>
           {t('cart')} ({items.reduce((s, i) => s + i.quantity, 0)})
         </h1>
 

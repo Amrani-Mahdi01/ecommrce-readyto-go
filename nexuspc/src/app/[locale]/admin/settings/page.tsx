@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { Settings } from 'lucide-react';
 import { getAISettings, getChargilySettings } from '@/app/actions/settings';
+import { getWhatsAppSettings } from '@/app/actions/whatsapp';
 import { AdminSettingsClient } from '@/components/admin/AdminSettingsClient';
+import { WhatsAppSettingsClient } from '@/components/admin/WhatsAppSettingsClient';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -14,10 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AdminSettingsPage({ params }: PageProps) {
   const { locale } = await params;
   const isRTL = locale === 'ar';
-  const [aiSettings, chargilySettings] = await Promise.all([
+  const [aiSettings, chargilySettings, whatsappSettings] = await Promise.all([
     getAISettings(),
     getChargilySettings(),
+    getWhatsAppSettings(),
   ]);
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://your-domain.com';
 
   return (
     <div className={`p-6 space-y-6 ${isRTL ? 'font-cairo' : ''}`}>
@@ -40,6 +45,14 @@ export default async function AdminSettingsPage({ params }: PageProps) {
         initial={aiSettings}
         chargilyInitial={chargilySettings}
       />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <WhatsAppSettingsClient
+          locale={locale}
+          siteUrl={siteUrl}
+          initial={whatsappSettings}
+        />
+      </div>
     </div>
   );
 }

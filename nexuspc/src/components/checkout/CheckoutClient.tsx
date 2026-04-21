@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Truck, Building2, ChevronRight, Tag, X, Loader2, CreditCard, Banknote } from 'lucide-react';
@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/utils';
 import { wilayas } from '@/config/wilayas';
 import { createClient } from '@/lib/supabase/client';
 import { validatePromoCode, incrementPromoUsage } from '@/app/actions/promo';
+import { checkAndPlaceOrder } from '@/app/actions/place-order';
 import type { DeliveryOffice } from '@/app/actions/delivery';
 
 interface FormData {
@@ -50,6 +51,11 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormData | 'office', string>>>({});
+
+  // ── Captcha ──
+  const [captcha, setCaptcha] = useState<{ a: number; b: number; op: '+' | '-' } | null>(null);
+  const [captchaInput, setCaptchaInput] = useState('');
+  const [captchaError, setCaptchaError] = useState('');
 
   // ── Payment method ──
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online'>('cod');
@@ -130,6 +136,14 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
     setFieldErrors({});
   };
 
+  // ── Captcha generation ──
+  useEffect(() => {
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    const ops: ('+' | '-')[] = ['+', '-'];
+    setCaptcha({ a, b, op: ops[Math.floor(Math.random() * 2)] });
+  }, []);
+
   // ── Validation ──
   const validate = (): boolean => {
     const errs: Partial<Record<keyof FormData | 'office', string>> = {};
@@ -155,7 +169,18 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
     }
 
     setFieldErrors(errs);
-    return Object.keys(errs).length === 0;
+    if (Object.keys(errs).length > 0) return false;
+
+    // Captcha check
+    if (captcha) {
+      const expected = captcha.op === '+' ? captcha.a + captcha.b : captcha.a - captcha.b;
+      if (parseInt(captchaInput) !== expected) {
+        setCaptchaError(isRTL ? 'الإجابة غير صحيحة' : 'Incorrect answer');
+        return false;
+      }
+    }
+
+    return true;
   };
 
   // ── Promo ──
@@ -193,7 +218,6 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
 
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      const orderNumber = 'NPC-' + String(Date.now()).slice(-6);
 
       // For office delivery, wilaya comes from the wilaya selector (same field),
       // commune is replaced by the office name.
@@ -202,19 +226,23 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
         ? selectedOffice.name
         : form.commune;
 
-      const { data: insertedOrder, error: insertError } = await (supabase.from('orders') as any).insert({
-        order_number: orderNumber,
-        user_id: user?.id ?? null,
-        full_name: form.fullName,
+      // Compute captcha answer for server-side validation
+      const captchaAnswer = captcha
+        ? (captcha.op === '+' ? captcha.a + captcha.b : captcha.a - captcha.b)
+        : 0;
+
+      const result = await checkAndPlaceOrder({
+        userId: user?.id ?? null,
+        fullName: form.fullName,
         phone: form.phone,
         wilaya: deliveryWilaya,
         commune: deliveryCommune,
         notes: form.notes || null,
         status: effectivePayment === 'online' ? 'pending_payment' : 'placed',
         total: finalPrice,
-        delivery_type: deliveryType,
-        delivery_price: deliveryFee,
-        office_id: deliveryType === 'office' ? selectedOfficeId : null,
+        deliveryType,
+        deliveryPrice: deliveryFee,
+        officeId: deliveryType === 'office' ? selectedOfficeId : null,
         items: items.map((i) => ({
           product_id: i.product.id,
           product_name_en: i.product.name_en,
@@ -222,27 +250,53 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
           quantity: i.quantity,
           price: i.product.price,
         })),
-        payment_method: effectivePayment,
-      }).select('id').single();
+        paymentMethod: effectivePayment,
+        captchaA: captcha?.a ?? 0,
+        captchaB: captcha?.b ?? 0,
+        captchaOp: captcha?.op ?? '+',
+        captchaAnswer,
+      });
 
-      if (insertError) {
+      if (result.error === 'captcha_failed') {
+        setCaptchaError(isRTL ? 'الإجابة غير صحيحة، حاول مرة أخرى' : 'Incorrect answer, please try again');
+        // Regenerate captcha
+        const a = Math.floor(Math.random() * 9) + 1;
+        const b = Math.floor(Math.random() * 9) + 1;
+        const ops: ('+' | '-')[] = ['+', '-'];
+        setCaptcha({ a, b, op: ops[Math.floor(Math.random() * 2)] });
+        setCaptchaInput('');
+        return;
+      }
+
+      if (result.error === 'ip_blocked') {
+        setError(isRTL
+          ? 'تم تقييد حسابك. يرجى التواصل مع الدعم.'
+          : 'Your account has been restricted. Please contact support.');
+        return;
+      }
+
+      if (result.error) {
         setError(locale === 'ar' ? 'فشل تسجيل الطلب. حاول مرة أخرى.' : 'Failed to place order. Please try again.');
         return;
       }
 
+      const insertedOrderId = result.orderId;
+      const orderNumber = result.orderNumber;
+
       if (appliedPromo) await incrementPromoUsage(appliedPromo.id);
 
-      // Online payment — redirect to Chargily
-      if (effectivePayment === 'online' && insertedOrder?.id) {
+      // Online payment — open Chargily in a new tab, redirect current page to success
+      if (effectivePayment === 'online' && insertedOrderId) {
         const res = await fetch('/api/chargily/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: insertedOrder.id, locale }),
+          body: JSON.stringify({ orderId: insertedOrderId, locale }),
         });
         const json = await res.json();
         if (json.checkout_url) {
           clearCart();
-          window.location.href = json.checkout_url;
+          window.open(json.checkout_url, '_blank');
+          router.push(`/${locale}/checkout/success?order=${orderNumber}&phone=${form.phone}&payment=online`);
           return;
         }
         setError(json.error ?? (locale === 'ar' ? 'فشل تحميل بوابة الدفع' : 'Failed to load payment gateway'));
@@ -265,7 +319,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
               <ShoppingBag className="h-10 w-10 text-muted-foreground/40" />
             </div>
           </div>
-          <h2 className="font-display font-black text-2xl uppercase">{locale === 'ar' ? 'السلة فارغة' : 'Your cart is empty'}</h2>
+          <h2 className="font-black text-2xl uppercase">{locale === 'ar' ? 'السلة فارغة' : 'Your cart is empty'}</h2>
           <p className="text-sm text-muted-foreground">
             {locale === 'ar' ? 'أضف بعض المنتجات للمتابعة' : 'Add some products to continue'}
           </p>
@@ -289,7 +343,7 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
           <span className="text-foreground">{t('title')}</span>
         </div>
 
-        <h1 className={`font-display font-black text-3xl uppercase mb-8 ${isRTL ? 'text-right' : ''}`}>{t('title')}</h1>
+        <h1 className={`font-black text-3xl uppercase mb-8 ${isRTL ? 'text-right' : ''}`}>{t('title')}</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
@@ -602,9 +656,31 @@ export function CheckoutClient({ locale, wilayaPrices, offices, onlinePaymentEna
               )}
             </div>
 
+            {/* ── Captcha ── */}
+            {captcha && (
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {isRTL ? 'التحقق من الهوية' : 'Verification'}
+                </label>
+                <div className="flex items-center gap-3 border border-border bg-muted/20 p-3">
+                  <span className="font-mono font-bold text-lg text-primary select-none">
+                    {captcha.a} {captcha.op} {captcha.b} = ?
+                  </span>
+                  <input
+                    type="number"
+                    value={captchaInput}
+                    onChange={e => { setCaptchaInput(e.target.value); setCaptchaError(''); }}
+                    className="w-20 h-9 border border-input bg-background text-center font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    placeholder="?"
+                  />
+                </div>
+                {captchaError && <p className="text-xs text-destructive">{captchaError}</p>}
+              </div>
+            )}
+
             {error && <p className="text-sm text-destructive">{error}</p>}
 
-            <Button type="submit" size="lg" className="w-full gap-2 rounded-none" disabled={loading}>
+            <Button type="submit" size="lg" className="w-full gap-2 rounded-none" disabled={loading || !captcha}>
               {loading && <span className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
               {t('placeOrder')}
             </Button>

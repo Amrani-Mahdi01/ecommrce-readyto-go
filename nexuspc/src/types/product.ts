@@ -21,6 +21,9 @@ export interface Product {
   meta_description_ar: string | null;
   created_at: string;
   updated_at: string;
+  // Review aggregates — hydrated server-side
+  review_count?: number;
+  avg_rating?: number;
 }
 
 export interface ProductWithCategory extends Product {

@@ -15,6 +15,7 @@ const cairo = Cairo({
   weight: ['400', '500', '600', '700', '800'],
 });
 
+
 export const metadata: Metadata = {
   title: 'NexusPC',
   description: "Algeria's premier gaming PC parts store",

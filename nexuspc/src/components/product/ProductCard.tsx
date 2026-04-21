@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingCart, PackageX, Zap } from 'lucide-react';
+import { Star, ShoppingCart, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +25,9 @@ export function ProductCard({ product, locale }: ProductCardProps) {
   const name = locale === 'ar' ? product.name_ar : product.name_en;
   const image = product.images[0] ?? null;
   const inStock = product.stock_qty > 0;
+  const reviewCount = product.review_count ?? 0;
+  const avgRating   = product.avg_rating   ?? 0;
+  const filledStars = Math.round(avgRating);
   const hasDiscount = product.compare_price && product.compare_price > product.price;
   const discountPct = hasDiscount
     ? Math.round((1 - product.price / product.compare_price!) * 100)
@@ -43,7 +46,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
   };
 
   return (
-    <div className={`group relative flex flex-col border border-border bg-card hover:border-primary/50 transition-all duration-200 overflow-hidden ${isRTL ? 'font-cairo' : ''}`}>
+    <div className={`group/card relative flex flex-col h-full border border-border bg-card hover:border-primary/50 transition-all duration-200 overflow-hidden ${isRTL ? 'font-cairo' : ''}`}>
       {/* Discount badge — flips side for RTL */}
       {hasDiscount && (
         <div className={`absolute top-2 z-10 ${isRTL ? 'right-2' : 'left-2'}`}>
@@ -55,19 +58,13 @@ export function ProductCard({ product, locale }: ProductCardProps) {
 
       {/* Image */}
       <Link href={`/${locale}/store/product/${product.slug}`} className="block aspect-square overflow-hidden bg-muted/30">
-        {image ? (
-          <Image
-            src={image}
-            alt={name}
-            width={400}
-            height={400}
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
-            <PackageX className="h-16 w-16" />
-          </div>
-        )}
+        <Image
+          src={image ?? '/product-placeholder.svg'}
+          alt={name}
+          width={400}
+          height={400}
+          className="w-full h-full object-contain p-4 group-hover/card:scale-105 transition-transform duration-300"
+        />
       </Link>
 
       {/* Content */}
@@ -88,15 +85,17 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           {name}
         </Link>
 
-        {/* Rating placeholder */}
+        {/* Rating */}
         <div className="flex items-center gap-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
-              className={`h-3 w-3 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`}
+              className={`h-3 w-3 ${i < filledStars ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20'}`}
             />
           ))}
-          <span className={`text-[10px] text-muted-foreground ${isRTL ? 'mr-1' : 'ml-1'}`}>(0)</span>
+          <span className={`text-[10px] text-muted-foreground ${isRTL ? 'mr-1' : 'ml-1'}`}>
+            {reviewCount > 0 ? `(${reviewCount})` : ''}
+          </span>
         </div>
 
         {/* Price */}
@@ -149,7 +148,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
         </div>
 
         {/* Bottom animated line */}
-        <div className="w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
+        <div className="w-0 h-px bg-primary transition-all duration-300 group-hover/card:w-full" />
       </div>
     </div>
   );
